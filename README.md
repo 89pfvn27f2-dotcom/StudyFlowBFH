@@ -50,6 +50,12 @@ Gruppen besitzen keine Datums- oder Erinnerungsfelder und lösen keine Erinnerun
 
 Die bestehende JSON-Speicherung unterstützt diese Angaben; eine Schemaänderung ist nicht erforderlich. Die Zugriffsregeln bleiben bestehen: Mitglieder können ihre eigenen Aufgaben speichern, ohne die Gruppe einer anderen Person zu überschreiben.
 
+## Motivation und Tagesfortschritt
+
+Das Tagesziel auf der Startseite bezieht sich auf Aufgaben mit heutigem Fälligkeitsdatum. Gruppen, Prüfungen und Aufgaben anderer Tage zählen nicht zum Erledigungsanteil. Die Anzeige verwendet ganze, abgerundete Prozentwerte; 100 % erscheint erst, wenn alle heutigen Aufgaben erledigt sind. Ohne heutige Aufgaben erscheinen Planungshinweise ohne Prozentanzeige.
+
+Die Motivationssprüche unterscheiden zwischen noch nicht begonnen, ersten Fortschritten, mindestens einem Viertel, mindestens der Hälfte, mindestens drei Vierteln und vollständig erledigt. Für jede Stufe sowie für Tage ohne Aufgaben gibt es drei Texte in Deutsch, Französisch, Italienisch und Englisch. Bei geändertem Erledigungsstand und beim Aufrufen der Startseite wird innerhalb der passenden Stufe gewechselt. Automatische Aktualisierungen, Kalendernavigation, Änderungen der Darstellung und Sprachwechsel behalten denselben Spruch bei. Die Auswahl wird nur im Browser-Arbeitsspeicher gehalten; es werden dafür keine Kontodaten gespeichert oder zusätzliche Dienste aufgerufen.
+
 ## Sprache
 
 Deutsch, Französisch, Italienisch und Englisch sind bereits vor der Anmeldung, während der Einrichtung und später im Profil auswählbar. Beim ersten Besuch wird eine unterstützte Browsersprache verwendet, andernfalls Englisch. Eine lokale Auswahl bleibt auf dem Gerät erhalten; nach der Anmeldung hat die im jeweiligen Konto gespeicherte Sprache Vorrang.
