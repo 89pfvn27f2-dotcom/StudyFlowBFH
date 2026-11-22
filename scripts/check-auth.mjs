@@ -562,7 +562,184 @@ await check('names in translated messages are escaped and own content is never t
   assert.match(card, />Group work<\/span>/);
 });
 
-console.log('All ' + passed + ' account, setup and language checks passed. No network requests or emails were sent.');
+const ownModules = [
+  { id: 'module-one', name: 'Accounting', code: 'ACC', color: '#245b87' },
+  { id: 'module-two', name: 'Management', code: 'MAN', color: '#963e6a' }
+];
+async function groupFixture(groups = [], items = [], modules = ownModules) {
+  const f = fixture();
+  savedAccountFixture(f, { profile: { name: 'Student', setupComplete: true }, modules, theme: 'Green', mono: false, revision: 7 }, items);
+  f.context.__accountTables.studyflow_groups = groups;
+  await f.run('loadAccount()'); f.run('cloudLoaded=true; render();');
+  return f;
+}
+function rawGroup(id, moduleId = '', extra = {}) {
+  return { id, owner_id: 'account-a', data: { title: 'Study group', description: '', moduleId, moduleSnapshot: ownModules.find(m => m.id === moduleId) || null, ...extra } };
+}
+function entryForm(f, overrides = {}) {
+  const values = { kind: 'group', entryId: '', title: 'New study group', description: '', moduleId: '', members: '', ...overrides };
+  let error = '';
+  const errorBox = { hidden: true, scrollIntoView() {}, set textContent(value) { error = value; } };
+  const elements = Object.entries(values).map(([name, value]) => ({ name, value, type: 'text', validity: { valid: name !== 'due' || !!value && !Number.isNaN(new Date(value).getTime()) }, setAttribute() {}, focus() {}, scrollIntoView() {} }));
+  elements.namedItem = name => elements.find(el => el.name === name);
+  const form = { elements, querySelector() { return errorBox; }, querySelectorAll() { return []; }, getAttribute() { return 'entry-form'; } };
+  f.context.__entryForm = form;
+  return { get error() { return error; } };
+}
+
+await check('group forms offer no module in all four languages and omit date and reminder controls', async () => {
+  const f = await groupFixture();
+  for (const [code, label] of [['de', 'Keinem Modul zugeordnet'], ['fr', 'Sans module associé'], ['it', 'Nessun modulo associato'], ['en', 'Not assigned to a module']]) {
+    f.run('language=' + JSON.stringify(code));
+    const markup = f.run("formMarkup({kind:'group',moduleId:''})");
+    assert.ok(markup.includes(label));
+    assert.match(markup, /<option value="" selected>/);
+    assert.match(markup, /value="module-one"/);
+    assert.doesNotMatch(markup, /name="due"|name="reminder"/);
+    for (const kind of ['task', 'exam']) {
+      const entry = f.run('formMarkup({kind:' + JSON.stringify(kind) + ",moduleId:'module-one'})");
+      assert.match(entry, /name="due"/); assert.match(entry, /name="reminder"/);
+    }
+  }
+});
+
+await check('a group without a module saves without a date or reminder and keeps membership', async () => {
+  const f = await groupFixture(); entryForm(f, { members: 'friend@example.test' });
+  assert.equal(await f.run('saveForm(__entryForm)'), true);
+  const payload = f.context.__savedAccounts.at(-1).payload;
+  assert.equal(payload.groups_data.length, 1);
+  const group = payload.groups_data[0];
+  assert.equal(group.data.moduleId, ''); assert.equal(group.data.moduleSnapshot, null);
+  assert.equal(group.data.due, null); assert.equal(group.data.reminder, 'none');
+  assert.equal(group.members[0].email, 'friend@example.test');
+  assert.equal(payload.items_data.length, 0);
+  assert.doesNotMatch(f.run('detailMarkup(state.items[0])'), /detail-label">Reminder|detail-label">Date &amp; time/);
+});
+
+await check('groups still accept one own module and reject unknown module IDs', async () => {
+  const f = await groupFixture();
+  const invalid = entryForm(f, { moduleId: 'unknown-module' });
+  assert.equal(await f.run('saveForm(__entryForm)'), false);
+  assert.match(invalid.error, /Choose a module/); assert.equal(f.context.__savedAccounts.length, 0);
+  entryForm(f, { moduleId: 'module-two' });
+  assert.equal(await f.run('saveForm(__entryForm)'), true);
+  const group = f.context.__savedAccounts.at(-1).payload.groups_data[0].data;
+  assert.equal(group.moduleId, 'module-two'); assert.equal(group.moduleSnapshot.name, 'Management');
+  assert.equal(group.due, null); assert.equal(group.reminder, 'none');
+});
+
+await check('a group can be saved without personal modules while tasks still require one', async () => {
+  const f = await groupFixture([], [], []); entryForm(f);
+  assert.equal(await f.run('saveForm(__entryForm)'), true);
+  const invalid = entryForm(f, { kind: 'task', title: 'Task', due: '2026-12-01T18:00', reminder: 'none', workType: 'individual' });
+  assert.equal(await f.run('saveForm(__entryForm)'), false);
+  assert.match(invalid.error, /Choose a module/);
+});
+
+await check('unassigned groups do not remove module and date requirements from their tasks', async () => {
+  const f = await groupFixture([rawGroup('cross-group')]);
+  let invalid = entryForm(f, { kind: 'task', title: 'Task', workType: 'group', groupId: 'cross-group', due: '2026-12-02T18:00' });
+  assert.equal(await f.run('saveForm(__entryForm)'), false);
+  assert.match(invalid.error, /Choose a module/);
+  for (const kind of ['task', 'exam']) {
+    invalid = entryForm(f, { kind, title: 'Entry', moduleId: 'module-one', due: '', duration: '90', workType: kind === 'task' ? 'group' : 'individual', groupId: 'cross-group' });
+    assert.equal(await f.run('saveForm(__entryForm)'), false);
+    assert.match(invalid.error, /Choose a valid date and time/);
+  }
+  assert.equal(f.context.__savedAccounts.length, 0);
+});
+
+await check('tasks in an unassigned group retain independently selected modules after save and reload', async () => {
+  const f = await groupFixture([rawGroup('cross-group')]);
+  entryForm(f, { kind: 'task', title: 'Module-specific task', moduleId: 'module-two', workType: 'group', groupId: 'cross-group', due: '2026-12-02T18:00', reminder: '30', priority: 'High' });
+  assert.equal(await f.run('saveForm(__entryForm)'), true);
+  const payload = f.context.__savedAccounts.at(-1).payload;
+  const task = payload.items_data[0];
+  assert.equal(task.group_id, 'cross-group'); assert.equal(task.data.moduleId, 'module-two');
+  assert.equal(task.data.moduleSnapshot.name, 'Management'); assert.equal(task.data.due, '2026-12-02T18:00');
+  assert.equal(task.data.reminder, '30');
+  f.context.__accountTables.studyflow_groups = payload.groups_data.map(g => ({ id: g.id, owner_id: 'account-a', data: g.data }));
+  f.context.__accountTables.studyflow_items = payload.items_data.map(i => ({ id: i.id, owner_id: 'account-a', group_id: i.group_id, data: i.data }));
+  f.context.__accountTables.studyflow_settings = { ...payload.settings, revision: 8 };
+  await f.run('loadAccount()');
+  assert.equal(f.run("state.items.find(i=>i.kind==='task').moduleId"), 'module-two');
+  assert.equal(f.run("state.items.find(i=>i.kind==='task').moduleSnapshot.name"), 'Management');
+});
+
+await check('shared tasks keep their module label for another member with different own modules', async () => {
+  const f = await groupFixture([rawGroup('cross-group')], [
+    { id: 'shared-task', owner_id: 'other-member', group_id: 'cross-group', data: { kind: 'task', title: 'Shared task', moduleId: 'foreign-module', moduleSnapshot: { id: 'foreign-module', name: 'Shared module label', code: 'SHARED', color: '#963e6a' }, due: '2026-12-02T18:00', reminder: 'none' } }
+  ]);
+  assert.equal(f.run("state.items.find(i=>i.id==='shared-task').moduleId"), 'foreign-module');
+  assert.match(f.run("card(state.items.find(i=>i.id==='shared-task'))"), /Shared module label/);
+});
+
+await check('a task can inherit a fixed group module belonging to another account', async () => {
+  const group = rawGroup('fixed-group', 'foreign-module', { moduleSnapshot: { id: 'foreign-module', name: 'Organizer module', code: 'ORG', color: '#245b87' } });
+  group.owner_id = 'other-account';
+  const f = await groupFixture([group]);
+  entryForm(f, { kind: 'task', title: 'Shared task', moduleId: 'module-one', workType: 'group', groupId: 'fixed-group', due: '2026-12-02T18:00', reminder: 'none' });
+  assert.equal(await f.run('saveForm(__entryForm)'), true);
+  const payload = f.context.__savedAccounts.at(-1).payload;
+  assert.equal(payload.groups_data.length, 0, 'Members must not save or overwrite another organizer’s group.');
+  assert.equal(payload.items_data[0].data.moduleId, 'foreign-module');
+  assert.equal(payload.items_data[0].data.moduleSnapshot.name, 'Organizer module');
+});
+
+await check('removing a group module preserves linked tasks, dates and existing module IDs', async () => {
+  const f = await groupFixture([rawGroup('existing-group', 'module-one', { due: '2026-12-01T18:00', reminder: '15' })], [
+    { id: 'linked-task', owner_id: 'account-a', group_id: 'existing-group', data: { kind: 'task', title: 'Keep this task', moduleId: 'module-one', due: '2026-12-04T12:00', reminder: '60' } }
+  ]);
+  entryForm(f, { entryId: 'existing-group', title: 'Existing group', moduleId: '' });
+  assert.equal(await f.run('saveForm(__entryForm)'), true);
+  const payload = f.context.__savedAccounts.at(-1).payload;
+  assert.equal(payload.groups_data[0].id, 'existing-group');
+  assert.equal(payload.groups_data[0].data.moduleId, '');
+  assert.equal(payload.groups_data[0].data.due, null);
+  assert.equal(payload.items_data[0].id, 'linked-task');
+  assert.equal(payload.items_data[0].group_id, 'existing-group');
+  assert.equal(payload.items_data[0].data.moduleId, 'module-one');
+  assert.equal(payload.items_data[0].data.due, '2026-12-04T12:00');
+  assert.equal(payload.items_data[0].data.reminder, '60');
+});
+
+await check('a failed group change rolls back the group and its linked tasks', async () => {
+  const f = await groupFixture([rawGroup('existing-group', 'module-one')], [
+    { id: 'linked-task', owner_id: 'account-a', group_id: 'existing-group', data: { kind: 'task', title: 'Keep this task', moduleId: 'module-one', due: '2026-12-04T12:00', reminder: 'none' } }
+  ]);
+  const before = f.run('JSON.stringify(state.items)');
+  const failed = entryForm(f, { entryId: 'existing-group', moduleId: 'module-two' });
+  f.run("accountClient.rpc=async()=>({error:{message:'Failed to fetch'}});");
+  assert.equal(await f.run('saveForm(__entryForm)'), false);
+  assert.match(failed.error, /Connection unavailable/);
+  assert.equal(f.run('JSON.stringify(state.items)'), before);
+});
+
+await check('groups never trigger reminders while tasks keep their reminder behavior', async () => {
+  const f = await groupFixture();
+  f.run("state.items=[{id:'legacy-group',kind:'group',title:'Group',due:new Date().toISOString(),reminder:'0'},{id:'current-task',kind:'task',title:'Task',due:new Date().toISOString(),reminder:'0'}];checkReminders();");
+  assert.equal(f.run('shownReminders.size'), 1);
+  assert.equal(f.run("[...shownReminders][0].includes(':current-task:')"), true);
+});
+
+await check('group task module control unlocks and restores the personal choice for unassigned groups', async () => {
+  const group = rawGroup('fixed-group', 'foreign-module', { moduleSnapshot: { id: 'foreign-module', name: 'Foreign module', code: 'FOR', color: '#245b87' } });
+  const f = await groupFixture([rawGroup('cross-group'), group]);
+  const options = ownModules.map(m => ({ value: m.id, dataset: {} }));
+  const module = { options, dataset: {}, value: 'module-two', disabled: false, closest() { return { style: { setProperty() {} } }; }, appendChild(option) { options.push(option); option.remove = () => { options.splice(options.indexOf(option), 1); }; } };
+  const controls = { 'task-type': { value: 'group' }, 'task-group': { value: 'cross-group' }, 'entry-module': module, 'task-group-field': { hidden: true } };
+  f.context.document.getElementById = id => controls[id] || null;
+  f.context.document.createElement = () => ({ dataset: {}, value: '', textContent: '' });
+  f.run('syncTaskGroup()'); assert.equal(module.disabled, false); assert.equal(module.value, 'module-two');
+  controls['task-group'].value = 'fixed-group';
+  f.run('syncTaskGroup()'); assert.equal(module.disabled, true); assert.equal(module.value, 'foreign-module');
+  assert.equal(options.at(-1).textContent, 'Foreign module · FOR');
+  controls['task-group'].value = 'cross-group';
+  f.run('syncTaskGroup()'); assert.equal(module.disabled, false); assert.equal(module.value, 'module-two');
+  assert.equal(options.some(o => o.value === 'foreign-module'), false);
+});
+
+console.log('All ' + passed + ' account, setup, language and group checks passed. No network requests or emails were sent.');
 
 
 

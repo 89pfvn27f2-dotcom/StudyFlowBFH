@@ -40,6 +40,14 @@ Die Darstellung passt sich automatisch an die Fensterbreite an. Auf dem Smartpho
 
 Anmeldung und Einrichtung behalten eine gut lesbare Formularbreite. Eintragsformulare und Details öffnen auf grösseren Bildschirmen als mittige Dialoge mit eigener Scrollmöglichkeit. Kleine Fensterhöhen werden berücksichtigt. Funktionen, Reihenfolge der Einträge, gespeicherte Daten, Farbauswahl und Sprachen bleiben erhalten.
 
+## Gruppen mit oder ohne Modulzuordnung
+
+Beim Anlegen oder Bearbeiten einer Gruppe kann ein eigenes Modul oder die zusätzliche Option **Keinem Modul zugeordnet** gewählt werden. Bei einer Gruppe ohne feste Zuordnung wählt man das Modul für jede Aufgabe separat. Eine Gruppe mit einem festen Modul gibt dieses an ihre Gruppenaufgaben weiter, auch wenn ein Mitglied andere eigene Module angelegt hat. Geteilte Aufgaben enthalten eine Modulbeschreibung, damit andere Mitglieder den richtigen Modulnamen und die Farbe sehen.
+
+Gruppen besitzen keine Datums- oder Erinnerungsfelder und lösen keine Erinnerungen aus. Bestehende Gruppen werden beim Laden ohne Termin und Erinnerung dargestellt; beim nächsten Speichern durch die Gruppenleitung werden `due: null` und `reminder: "none"` geschrieben. Aufgaben und Prüfungen behalten ihre Termine, Erinnerungen und Gruppenverknüpfungen. Beim Entfernen einer festen Gruppenzuordnung werden die Module vorhandener Aufgaben nicht geleert.
+
+Die bestehende JSON-Speicherung unterstützt diese Angaben; eine Schemaänderung ist nicht erforderlich. Die Zugriffsregeln bleiben bestehen: Mitglieder können ihre eigenen Aufgaben speichern, ohne die Gruppe einer anderen Person zu überschreiben.
+
 ## Sprache
 
 Deutsch, Französisch, Italienisch und Englisch sind bereits vor der Anmeldung, während der Einrichtung und später im Profil auswählbar. Beim ersten Besuch wird eine unterstützte Browsersprache verwendet, andernfalls Englisch. Eine lokale Auswahl bleibt auf dem Gerät erhalten; nach der Anmeldung hat die im jeweiligen Konto gespeicherte Sprache Vorrang.
@@ -59,7 +67,7 @@ Alle Übersetzungen sind in der App enthalten. Es wird kein Übersetzungsdienst 
 - Abmelden und mit einem zweiten bestätigten Konto anmelden. Persönliche Aufgaben gehören jeweils zum eigenen Konto.
 - Eine Gruppenarbeit mit der bestätigten Adresse des zweiten Kontos teilen und die geteilten Einträge in beiden Konten prüfen.
 
-Die Eingabeprüfung, typische Auth-Fehler, Rücksprungadressen, Kontowechsel die verpflichtende Einrichtung und die vier Sprachen einschliesslich Speichern, Wiederholen nach Fehlern, Datumsausgabe und Erhalt bestehender Einträge werden ohne echte E-Mail-Sendungen geprüft:
+Die automatischen Prüfungen decken Anmeldung, Kontowechsel, Einrichtung, die vier Sprachen und Gruppen mit oder ohne Modulzuordnung ab. Sie prüfen auch Speicherfehler, Datumsausgabe und den Erhalt bestehender Einträge, ohne echte E-Mails zu versenden:
 
 ```sh
 npm run check:auth
