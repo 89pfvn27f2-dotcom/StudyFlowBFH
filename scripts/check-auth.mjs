@@ -92,6 +92,7 @@ await check('signup with a verified session opens the right account', async () =
 });
 
 for (const [code, expected] of [
+  ['user_already_exists', /already exists.*Back to sign in/],
   ['email_address_not_authorized', /Registration emails are not available/],
   ['over_email_send_rate_limit', /Too many emails/],
   ['email_not_confirmed', /confirm your email address/],
@@ -101,6 +102,7 @@ for (const [code, expected] of [
   f.response = { data: { session: null }, error: { code } };
   f.run("authMode = 'signup';"); await f.run('submitAccount(__form)');
   assert.match(f.error, expected); assert.equal(button.disabled, false); assert.equal(f.run('authBusy'), false);
+  assert.equal(f.requests.length, 1); assert.equal(f.boots.length, 0, 'A failed signup must not open personal account data.');
 });
 
 await check('connection failures show feedback and permit retry', async () => {

@@ -51,6 +51,7 @@ function emptyAccount(user=null){
   return {version:2,profile:{name:user?.user_metadata?.name||user?.email?.split('@')[0]||'',degree:'BSc Business Administration',studyMode:'Full-time',semesterTerm:term,semesterYear:year,semester:term+' '+year},theme:'Green',mono:false,modules:seed.modules.map(m=>({...m,id:newId()})),items:[],people:[],activeUser:user?.id||null};
 }
 function accountMessage(error){
+  if(error?.code==='user_already_exists')return 'An account with this email already exists. Choose "Back to sign in" and use your existing password.';
   if(error?.code==='email_address_not_authorized')return 'Registration emails are not available yet. Please contact the StudyFlow administrator.';
   if(error?.code==='over_email_send_rate_limit')return 'Too many emails requested. Please wait before trying again.';
   if(error?.code==='email_not_confirmed')return 'Please confirm your email address before signing in.';
