@@ -1859,7 +1859,7 @@ function accountMessage(error){
 function setLayout(mode){for(const key of ['auth','setup','app'])app.classList.toggle('layout-'+key,key===mode)}
 function brandHeader(){
   const content='<img class="brand-mark" src="./assets/studyflow-bfh-logo.png" width="46" height="46" alt="" aria-hidden="true"><span class="brand-name">StudyFlow BFH</span>';
-  const clickable=!isLoading&&!isRecovery&&!setupActive()&&(currentUser?cloudLoaded:!authBusy);
+  const clickable=!isLoading&&!isRecovery&&(currentUser?cloudLoaded&&!setupActive():!authBusy);
   const action=currentUser?'data-action="route" data-route="home"':'data-action="auth-mode" data-mode="login"';
   return `<header class="header">${clickable?`<button type="button" class="brand brand-home" ${action} aria-label="${tx('Home')}" title="${tx('Home')}">${content}</button>`:`<div class="brand">${content}</div>`}</header>`;
 }
