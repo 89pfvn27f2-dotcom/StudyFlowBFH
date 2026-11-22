@@ -30,16 +30,26 @@ Alle Konten durchlaufen vor der Nutzung einmal eine Einrichtung. Gespeicherte An
 
 Die Eingaben werden erst gemeinsam am Ende gespeichert. Bestehende Modul-IDs und verknüpfte Aufgaben bleiben erhalten; verwendete Module können während der Einrichtung nicht entfernt werden. Nach dem Speichern erklärt eine Meldung, dass spätere Änderungen im Profil möglich sind. Der Abschluss wird im Profil des Kontos gespeichert und gilt damit auch auf anderen Geräten.
 
+## Sprache
+
+Deutsch, Französisch, Italienisch und Englisch sind bereits vor der Anmeldung, während der Einrichtung und später im Profil auswählbar. Beim ersten Besuch wird eine unterstützte Browsersprache verwendet, andernfalls Englisch. Eine lokale Auswahl bleibt auf dem Gerät erhalten; nach der Anmeldung hat die im jeweiligen Konto gespeicherte Sprache Vorrang.
+
+In der Einrichtung wird die Sprache zusammen mit den vollständigen Angaben gespeichert. Im fertigen Konto wird ein Sprachwechsel sofort gespeichert; bei einem Fehler bleibt die bisherige Sprache aktiv. Kalenderdaten, Wochentage, Formulare, Bedienelemente, Rückmeldungen und Erinnerungen werden übersetzt. Die HTML-Seite kennzeichnet die aktive Sprache für Hilfstechnologien. Eigene Namen, Studiengänge, Module, Titel und Beschreibungen werden nicht übersetzt; interne Auswahlwerte und bestehende Verknüpfungen bleiben unverändert.
+
+Alle Übersetzungen sind in der App enthalten. Es wird kein Übersetzungsdienst aufgerufen. Die Sprachwahl betrifft die App-Oberfläche; Supabase-E-Mail-Vorlagen werden separat verwaltet.
+
 ## Funktionsprüfung
 
 - Ein neues Konto mit einer eigenen erreichbaren E-Mail-Adresse registrieren.
 - Die angezeigte Bestätigungsnachricht prüfen und den Link aus der E-Mail öffnen.
+- Die Sprache vor der Anmeldung wechseln, Eingaben beibehalten und Fehlermeldungen prüfen.
 - Anmelden, die Einrichtung mit mindestens einem eigenen Modul abschliessen und den Hinweis zu späteren Profiländerungen prüfen.
 - Eine Aufgabe speichern, die Seite neu laden und die Aufgabe erneut öffnen. Die Einrichtung darf nicht erneut erscheinen.
+- Im Profil die Sprache wechseln und neu laden; die Auswahl muss erhalten bleiben. Eigene Modulnamen und Einträge dürfen sich nicht ändern.
 - Abmelden und mit einem zweiten bestätigten Konto anmelden. Persönliche Aufgaben gehören jeweils zum eigenen Konto.
 - Eine Gruppenarbeit mit der bestätigten Adresse des zweiten Kontos teilen und die geteilten Einträge in beiden Konten prüfen.
 
-Die Eingabeprüfung, typische Auth-Fehler, Rücksprungadressen, Kontowechsel und die verpflichtende Einrichtung einschliesslich Speichern, Wiederholen nach Fehlern und Erhalt bestehender Einträge werden ohne echte E-Mail-Sendungen geprüft:
+Die Eingabeprüfung, typische Auth-Fehler, Rücksprungadressen, Kontowechsel die verpflichtende Einrichtung und die vier Sprachen einschliesslich Speichern, Wiederholen nach Fehlern, Datumsausgabe und Erhalt bestehender Einträge werden ohne echte E-Mail-Sendungen geprüft:
 
 ```sh
 npm run check:auth

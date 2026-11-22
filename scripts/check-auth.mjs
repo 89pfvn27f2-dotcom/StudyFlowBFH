@@ -7,14 +7,16 @@ const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
 assert.equal(scripts.length, 2, 'The self-contained app must include the SDK and app scripts.');
 for (const [index, code] of scripts.entries()) new vm.Script(code, { filename: 'inline-script-' + index + '.js' });
 
-function fixture() {
-  const requests = [], boots = [], events = new Map();
+function fixture({ languages = ['en-GB'], savedLanguage, storageUnavailable = false } = {}) {
+  const requests = [], boots = [], events = new Map(), deviceStorage = new Map();
+  if (savedLanguage) deviceStorage.set('studyflow-interface-language', savedLanguage);
+  let documentLanguage = '';
   let error = '', clientOptions, response = { data: { session: null }, error: null };
   const errorBox = { className: '', setAttribute() {}, scrollIntoView() {}, remove() {}, set textContent(value) { error = value; } };
   const contentView = { scrollTop: 0 };
   const app = {
     innerHTML: '', style: { setProperty() {} }, classList: { toggle() {} },
-    querySelector(selector) { return selector === '.auth-error' && error ? errorBox : null; },
+    querySelector(selector) { return selector === 'form' ? context.__visibleForm : selector === '.auth-error' && error ? errorBox : null; },
     addEventListener(name, callback) { events.set(name, callback); }, appendChild() {}
   };
   const api = {
@@ -30,25 +32,29 @@ function fixture() {
   const context = vm.createContext({
     console, URL, Date, Map, Set, JSON, Promise,
     location: { protocol: 'https:', href: 'https://example.test/StudyFlowBFHFinaleVersion/index.html', hash: '' },
-    document: { getElementById(id) { return id === 'setup-form' ? context.__setupForm : app; }, querySelector(selector) { return selector === '.content' ? contentView : null; }, createElement() { return errorBox; }, addEventListener() {} },
+    document: { documentElement: { setAttribute(name, value) { if (name === 'lang') documentLanguage = value; } }, getElementById(id) { return id === 'setup-form' ? context.__setupForm : context.__visibleForm?.id === id ? context.__visibleForm : id === 'app' ? app : null; }, querySelector(selector) { return selector === '.content' ? contentView : null; }, createElement() { return errorBox; }, addEventListener() {} },
     window: { StudyFlowSupabase: { createClient(url, key, options) { clientOptions = options; return api; } }, addEventListener() {} },
     setInterval() {}, setTimeout(callback) { callback(); return 0; }, clearTimeout() {},
+    navigator: { languages, language: languages[0] },
+    localStorage: { getItem(key) { if (storageUnavailable) throw Error('Storage disabled'); return deviceStorage.get(key) || null; }, setItem(key, value) { if (storageUnavailable) throw Error('Storage disabled'); deviceStorage.set(key, value); } },
     __boots: boots
   });
   vm.runInContext(scripts[1], context);
   vm.runInContext('bootAccount = async session => { __boots.push(session); };', context);
   return {
-    context, app, requests, boots, events,
+    context, app, requests, boots, events, deviceStorage,
+    get documentLanguage() { return documentLanguage; },
     get error() { return error; },
     get options() { return clientOptions; },
     set response(value) { response = value; },
     run(code) { return vm.runInContext(code, context); },
     form(overrides = {}) {
       const values = { accountEmail: 'student@example.test', accountName: 'StudyFlow test', accountPassword: 'StudyFlow-check-123', accountPasswordConfirm: 'StudyFlow-check-123', ...overrides };
-      const controls = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, { value, validity: { valid: key !== 'accountEmail' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()) } }]));
+      const controls = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, { name: key, value, type: key.includes('Password') ? 'password' : 'text', validity: { valid: key !== 'accountEmail' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()) } }]));
+      const elements = Object.values(controls); elements.namedItem = name => controls[name];
       const button = { disabled: false, textContent: 'Create account', isConnected: true };
-      const form = { elements: { namedItem(name) { return controls[name]; } }, querySelector() { return button; }, before() {}, getAttribute() { return 'account-form'; } };
-      context.__form = form;
+      const form = { id: 'account-form', elements, querySelector() { return button; }, before() {}, getAttribute() { return 'account-form'; } };
+      context.__form = form; context.__visibleForm = form;
       return { form, button };
     }
   };
@@ -226,7 +232,7 @@ await check('setup requires the degree and study mode without saving partial det
   assert.match(f.app.innerHTML, /Enter your degree program/);
   setupForm(f, { degree: 'My program' });
   assert.equal(await f.run('submitSetup(__setupForm)'), false);
-  assert.match(f.app.innerHTML, /Enter your study mode/);
+  assert.match(f.app.innerHTML, /Choose your study mode/);
   assert.equal(f.context.__savedAccounts.length, 1);
 });
 
@@ -354,7 +360,209 @@ await check('signout clears the setup draft before another account is opened', a
   assert.equal(f.run('setupDraft.modules.length'), 0);
 });
 
-console.log('All ' + passed + ' account and setup checks passed. No network requests or emails were sent.');
+await check('first visit uses a supported browser language and updates the document language', async () => {
+  const f = fixture({ languages: ['pt-BR', 'de-CH', 'fr-CH'] });
+  assert.equal(f.run('language'), 'de');
+  assert.equal(f.documentLanguage, 'de');
+  assert.match(f.app.innerHTML, /Willkommen zurück/);
+  for (const name of ['Deutsch', 'Français', 'Italiano', 'English']) assert.ok(f.app.innerHTML.includes(name));
+});
+
+await check('device preference wins over browser language and unsupported values fall back safely', async () => {
+  assert.equal(fixture({ languages: ['de-CH'], savedLanguage: 'fr' }).run('language'), 'fr');
+  assert.equal(fixture({ languages: ['es-ES', 'it-CH'], savedLanguage: 'xx' }).run('language'), 'it');
+  assert.equal(fixture({ languages: ['es-ES'], savedLanguage: '__proto__' }).run('language'), 'en');
+});
+
+await check('blocked browser storage still permits language selection', async () => {
+  const f = fixture({ languages: ['it-CH'], storageUnavailable: true });
+  assert.match(f.app.innerHTML, /Bentornato/);
+  assert.equal(await f.run("changeLanguage('de')"), true);
+  assert.match(f.app.innerHTML, /Willkommen zurück/);
+});
+
+const renderedLocales = {};
+for (const [code, login, tasks, setup, fieldName] of [
+  ['de', 'Willkommen zurück', 'Aufgaben', 'Richte dein Studium ein', 'Beschreibung'],
+  ['fr', 'Bon retour', 'Tâches', 'Configure tes études', 'Description'],
+  ['it', 'Bentornato', 'Attività', 'Configura i tuoi studi', 'Descrizione'],
+  ['en', 'Welcome back', 'Tasks', 'Set up your studies', 'Description']
+]) await check(code + ': authentication, setup, navigation and all entry views render in the selected language', async () => {
+  const f = fixture({ savedLanguage: code });
+  assert.ok(f.app.innerHTML.includes(login));
+  f.run('globalThis.__translationKeys=new Set(); const originalTranslate=t; t=(message,values)=>{__translationKeys.add(String(message));return originalTranslate(message,values)};');
+  f.run(`
+    currentUser={id:'account-a',email:'owner@example.test'}; cloudLoaded=true;
+    state=emptyAccount(currentUser);
+    state.profile={...state.profile,name:'NAME_DATA',degree:'DEGREE_DATA',studyMode:'Part-time',setupComplete:true};
+    state.modules=[{id:'course-a',name:'MODULE_DATA',code:'CODE_DATA',color:'#245b87'}];
+    state.people=[{id:'member@example.test',name:'MEMBER_DATA'}];
+    state.items=[
+      {id:'group-a',kind:'group',ownerId:'account-a',title:'GROUP_DATA',description:'GROUP_DESCRIPTION',moduleId:'course-a',memberIds:['member@example.test'],due:'2026-03-13T12:00',reminder:'none'},
+      {id:'task-a',kind:'task',ownerId:'account-a',title:'TASK_DATA',description:'TASK_DESCRIPTION',moduleId:'course-a',groupId:'group-a',workType:'group',priority:'Normal',due:'2026-03-13T12:00',reminder:'30'},
+      {id:'exam-a',kind:'exam',ownerId:'account-a',title:'EXAM_DATA',description:'EXAM_DESCRIPTION',moduleId:'course-a',due:'2026-03-13T12:00',reminder:'none',duration:90,examType:'On paper',location:'ROOM_DATA',materials:'MATERIALS_DATA'}
+    ];
+    globalThis.__viewHtml=[nav(),home(),overview('task'),overview('exam'),overview('group'),profile(),moduleSettings(),appearance(),memberProfile('member@example.test','group-a')];
+    for(const item of state.items)__viewHtml.push(formMarkup(item),detailMarkup(item));
+    resetSetup();state.profile.setupComplete=false;renderSetup();__viewHtml.push(app.innerHTML);
+    setupStep=2;renderSetup();__viewHtml.push(app.innerHTML);
+    setupNotice=true;renderSetup();__viewHtml.push(app.innerHTML);
+    resetSetup();
+    for(const mode of ['login','signup','reset']){authMode=mode;renderAuth();__viewHtml.push(app.innerHTML)}
+    isRecovery=true;renderAuth();__viewHtml.push(app.innerHTML);isRecovery=false;
+  `);
+  const views = JSON.parse(f.run('JSON.stringify(__viewHtml)'));
+  assert.ok(views[0].includes(tasks));
+  assert.ok(views[9].includes(fieldName), 'Entry fields must be translated.');
+  assert.ok(views[15].includes(setup));
+  assert.equal(views.length, 22);
+  for (const key of JSON.parse(f.run('JSON.stringify([...__translationKeys])'))) {
+    assert.equal(f.run('Object.hasOwn(TRANSLATIONS,' + JSON.stringify(key) + ')'), true, 'Missing translation: ' + key);
+  }
+  assert.ok(views.some(view => view.includes('MODULE_DATA')), 'Own module names must survive translation.');
+  assert.ok(views.some(view => view.includes('TASK_DESCRIPTION')), 'Own descriptions must survive translation.');
+  renderedLocales[code] = views;
+});
+
+await check('every message has three complete translations with matching placeholders', async () => {
+  const f = fixture();
+  const messages = JSON.parse(f.run('JSON.stringify(TRANSLATIONS)'));
+  const placeholders = text => [...text.matchAll(/\{([a-zA-Z]+)\}/g)].map(match => match[1]).sort();
+  assert.ok(Object.keys(messages).length >= 280);
+  for (const [key, translations] of Object.entries(messages)) for (const code of ['de', 'fr', 'it']) {
+    assert.ok(translations[code]?.trim(), key + ' missing in ' + code);
+    assert.deepEqual(placeholders(translations[code]), placeholders(key), key + ' has changed placeholders in ' + code);
+  }
+});
+
+await check('language changes before sign-in retain typed credentials without storing them', async () => {
+  const f = fixture();
+  const { form } = f.form({ accountEmail: 'Typed@Example.test', accountPassword: 'Private-password-123' });
+  const snapshot = f.run('captureVisibleForm()');
+  // Replacing a form during a render clears its controls; restoration must fill the new controls.
+  const restored = f.form({ accountEmail: '', accountPassword: '' }).form;
+  f.context.__snapshot = snapshot; f.run('restoreVisibleForm(__snapshot)');
+  assert.equal(restored.elements.namedItem('accountEmail').value, 'Typed@Example.test');
+  assert.equal(restored.elements.namedItem('accountPassword').value, 'Private-password-123');
+  const control = { value: 'fr', matches(selector) { return selector === '[data-language]'; } };
+  await f.events.get('change')({ target: control });
+  assert.match(f.app.innerHTML, /Bon retour/);
+  assert.equal(f.documentLanguage, 'fr');
+  assert.equal(form.elements.namedItem('accountEmail').value, 'Typed@Example.test');
+  assert.deepEqual([...f.deviceStorage], [['studyflow-interface-language', 'fr']]);
+  assert.equal(f.requests.length, 0);
+});
+
+await check('changing language also retranslates an existing authentication error', async () => {
+  const f = fixture(); f.form({ accountEmail: 'invalid' });
+  await f.run('submitAccount(__form)');
+  assert.match(f.error, /valid email address/);
+  await f.run("changeLanguage('de')");
+  assert.match(f.app.innerHTML, /Gib eine gültige E-Mail-Adresse ein/);
+  await f.run("changeLanguage('it')");
+  assert.match(f.app.innerHTML, /Inserisci un indirizzo e-mail valido/);
+});
+
+await check('setup language changes retain both steps and are saved together with setup', async () => {
+  const f = await openSetup(fixture());
+  setupForm(f, { name: 'Own name', degree: 'Own degree', studyMode: 'Part-time' });
+  assert.equal(await f.run("changeLanguage('fr')"), true);
+  assert.equal(f.run('setupDraft.profile.degree'), 'Own degree');
+  assert.match(f.app.innerHTML, /Configure tes études/);
+  setupForm(f); await f.run('submitSetup(__setupForm)');
+  await setupClick(f, 'setup-add-module');
+  const id = f.run('setupDraft.modules[0].id');
+  setupForm(f, { ['moduleName:' + id]: 'Home', ['moduleCode:' + id]: 'OWN' });
+  await f.run("changeLanguage('it')");
+  assert.equal(f.run('setupDraft.modules[0].name'), 'Home');
+  assert.match(f.app.innerHTML, /Aggiungi i tuoi moduli/);
+  assert.equal(f.context.__savedAccounts.length, 1, 'Changing setup language must not save partial profile data.');
+  setupForm(f); await f.run('submitSetup(__setupForm)');
+  const saved = f.context.__savedAccounts.at(-1).payload.settings;
+  assert.equal(saved.profile.language, 'it');
+  assert.equal(saved.profile.name, 'Own name');
+  assert.equal(saved.profile.degree, 'Own degree');
+  assert.equal(saved.modules[0].name, 'Home');
+  assert.match(f.app.innerHTML, /La configurazione è completa/);
+  // The completion screen also offers language selection and must persist it.
+  await f.run("changeLanguage('de')");
+  assert.equal(f.context.__savedAccounts.at(-1).payload.settings.profile.language, 'de');
+});
+
+await check('account language overrides device preference and a change preserves own entries', async () => {
+  const f = fixture({ savedLanguage: 'en' });
+  await openSetup(f, { profile: { name: 'Home', degree: 'Normal', language: 'fr', setupComplete: true }, modules: [{ id: 'own', name: 'Group work', code: 'OWN', color: '#245b87' }], theme: 'Green', mono: false, revision: 8 }, [
+    { id: 'own-task', owner_id: 'account-a', group_id: null, data: { kind: 'task', title: 'Sign out', description: 'Your profile', moduleId: 'own', priority: 'High' } }
+  ]);
+  assert.equal(f.run('language'), 'fr');
+  assert.equal(f.documentLanguage, 'fr');
+  const before = f.run('JSON.stringify({modules:state.modules,items:state.items})');
+  await f.run("route='profile';changeLanguage('it')");
+  assert.match(f.app.innerHTML, /Profilo e promemoria/);
+  assert.match(f.app.innerHTML, />Normal ·/);
+  assert.equal(f.run('JSON.stringify({modules:state.modules,items:state.items})'), before);
+  const saved = f.context.__savedAccounts.at(-1).payload;
+  assert.equal(saved.expected_revision, 8);
+  assert.equal(saved.settings.profile.language, 'it');
+  assert.equal(saved.items_data[0].data.title, 'Sign out');
+  assert.equal(saved.items_data[0].data.priority, 'High');
+  assert.equal(saved.settings.modules[0].name, 'Group work');
+  assert.equal(f.deviceStorage.get('studyflow-interface-language'), 'it');
+});
+
+await check('failed language save restores the previous interface and allows retry', async () => {
+  const f = await openSetup(fixture(), { profile: { language: 'de', setupComplete: true }, modules: [], theme: 'Green', mono: false, revision: 2 });
+  f.run("accountClient.rpc=async()=>({error:{message:'Failed to fetch'}});route='profile';");
+  assert.equal(await f.run("changeLanguage('fr')"), false);
+  assert.equal(f.run('language'), 'de');
+  assert.equal(f.run('state.profile.language'), 'de');
+  assert.equal(f.deviceStorage.get('studyflow-interface-language'), 'de');
+  assert.match(f.error, /Keine Verbindung/);
+  f.run('accountClient.rpc=async()=>({data:3,error:null});');
+  assert.equal(await f.run("changeLanguage('fr')"), true);
+  assert.equal(f.run('state.profile.language'), 'fr');
+  assert.match(f.app.innerHTML, /Profil et rappels/);
+});
+
+await check('invalid language choices and concurrent saves cannot alter the preference', async () => {
+  const f = fixture();
+  assert.equal(await f.run("changeLanguage('es')"), false);
+  f.run('isSaving=true;');
+  f.context.__control = { value: 'de' };
+  assert.equal(await f.run("changeLanguage('de',__control)"), false);
+  assert.equal(f.context.__control.value, 'en');
+  assert.equal(f.run('language'), 'en');
+  assert.equal(f.deviceStorage.size, 0);
+});
+
+await check('calendar dates and weekdays use the selected locale while form values remain stable', async () => {
+  const f = fixture();
+  const dates = new Set();
+  for (const code of ['de', 'fr', 'it', 'en']) {
+    f.run('language=' + JSON.stringify(code));
+    dates.add(f.run("dateText('2026-03-13T12:00')"));
+    assert.ok(f.run('calendar()').includes(new Date(2024, 0, 1).toLocaleDateString({ de: 'de-CH', fr: 'fr-CH', it: 'it-CH', en: 'en-GB' }[code], { weekday: 'short' })));
+  }
+  assert.ok(dates.size >= 3, 'Month and date formats must not stay fixed in English.');
+  f.run("language='fr';");
+  assert.match(f.run("selectOptions([['Normal','Normal'],['High','High']],'Normal')"), /value="Normal" selected>Normale/);
+  assert.match(f.run("selectOptions([['Full-time','Full-time']],'Full-time')"), /value="Full-time" selected>À plein temps/);
+  assert.match(f.run("profileOptions(['Home'],'Home')"), />Home</);
+});
+
+await check('names in translated messages are escaped and own content is never translated', async () => {
+  const f = fixture();
+  f.run("language='de';");
+  assert.equal(f.run("tx('Hello {name}, ready for today?',{name:'<img src=x onerror=alert(1)>'})").includes('<img'), false);
+  f.run("currentUser={id:'account-a'};state=emptyAccount(currentUser);state.profile.name='Home';state.profile.degree='Normal';state.modules=[{id:'a',name:'Group work',code:'OWN',color:'#245b87'}];");
+  f.context.__item = { id: 'a-task', ownerId: 'account-a', kind: 'task', moduleId: 'a', title: 'Sign out', description: 'Your profile', priority: 'Normal' };
+  const card = f.run('card(__item)');
+  assert.match(card, />Sign out<\/h3>/);
+  assert.match(card, />Your profile<\/p>/);
+  assert.match(card, />Group work<\/span>/);
+});
+
+console.log('All ' + passed + ' account, setup and language checks passed. No network requests or emails were sent.');
 
 
 
