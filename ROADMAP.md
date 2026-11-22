@@ -15,3 +15,8 @@ Die Änderungen werden einzeln in dieser Reihenfolge umgesetzt.
 - [x] **11. Konto löschen:** Im Profil mit ausdrücklich bestätigter E-Mail-Adresse und erneutem Passwort-Anmelden. Das eigene Konto, Profil, Module, eigene Einträge und selbst erstellte Gruppen werden entfernt. Aufgaben anderer Mitglieder bleiben als persönliche Aufgaben erhalten; andere Gruppen werden verlassen. Sitzungen und lokale Anmeldung werden entfernt. Bestätigung und Fehler sind in allen vier Sprachen verfügbar.
 
 
+
+## Nachbesserungen
+
+- [x] Die frühere Studiengang-Auswahl als Dropdown in Einrichtung und Profil wiederhergestellt, ohne neue Freitexteingabe. Gespeicherte Angaben bleiben erhalten.
+- [x] Die maximale Breite von 1440 Pixeln und die äusseren Ränder auf dem PC entfernt. Der App-Rahmen nutzt die volle Fensterfläche; die Profilansicht die verfügbare Arbeitsbreite.

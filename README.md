@@ -34,13 +34,17 @@ Die Eingaben werden erst gemeinsam am Ende gespeichert. Bestehende Modul-IDs und
 
 Der manuelle Button **Refresh account** wurde aus dem Profil entfernt. Die App lädt Kontodaten weiterhin beim Zurückkehren zum Browserfenster sowie alle 30 Sekunden automatisch nach. Während der Einrichtung, beim Speichern und bei geöffneten Formularen oder Details wird die Aktualisierung ausgesetzt, damit laufende Eingaben erhalten bleiben. Hinweise bei Speicherfehlern oder Konflikten erklären in der ausgewählten Sprache, dass die Seite neu geladen werden soll.
 
+## Studiengang auswählen
+
+Einrichtung und Profil verwenden wieder dieselbe frühere Dropdown-Auswahl: Agronomie, Betriebsökonomie, Wirtschaftsinformatik, Architektur, Bauingenieurwesen und Soziale Arbeit. Es gibt kein Freitextfeld für neue Studiengänge. Die Beschriftungen folgen der App-Sprache; die gespeicherten Werte bleiben gleich. Ein bereits gespeicherter abweichender Studiengang bleibt beim Bearbeiten erhalten und wird nicht automatisch durch einen Listeneintrag ersetzt. Bei neuen Konten bleibt die Auswahl zunächst leer.
+
 ## Logo und App-Name
 
 Der vollständige Name lautet **StudyFlow BFH**. Das ausgewählte Buchsymbol mit geschwungenem Pfeil erscheint in allen Kopfzeilen und als Browser-Symbol. Die Bilddatei enthält nur das Symbol; der Name daneben bleibt lesbarer HTML-Text. Im Schwarz-Weiss-Modus wird auch das Logo ohne Farbe dargestellt.
 
 ## Laptop, Tablet und Smartphone
 
-Die Darstellung passt sich automatisch an die Fensterbreite an. Auf dem Smartphone stehen Inhalte untereinander; die Hauptnavigation bleibt unten. Auf Tablets wird der verfügbare Platz breiter genutzt. Ab 900 Pixeln Fensterbreite wechselt die angemeldete App zu einer seitlichen Navigation und einer breiten Arbeitsfläche. Auf der Startseite stehen Kalender und heutige Einträge nebeneinander; Aufgaben-, Prüfungs- und Gruppenlisten haben zwei Spalten.
+Die Darstellung passt sich automatisch an die Fensterbreite an. Auf dem Smartphone stehen Inhalte untereinander; die Hauptnavigation bleibt unten. Auf Tablets wird der verfügbare Platz breiter genutzt. Ab 900 Pixeln Fensterbreite nutzt der App-Rahmen die volle Fensterbreite und -höhe ohne äussere Ränder oder eine maximale Breite. Die angemeldete App verwendet eine seitliche Navigation und eine breite Arbeitsfläche; auch die Profilansicht füllt die verfügbare Arbeitsfläche aus. Auf der Startseite stehen Kalender und heutige Einträge nebeneinander; Aufgaben-, Prüfungs- und Gruppenlisten haben zwei Spalten.
 
 Anmeldung und Einrichtung behalten eine gut lesbare Formularbreite. Eintragsformulare und Details öffnen auf grösseren Bildschirmen als mittige Dialoge mit eigener Scrollmöglichkeit. Kleine Fensterhöhen werden berücksichtigt. Funktionen, Reihenfolge der Einträge, gespeicherte Daten, Farbauswahl und Sprachen bleiben erhalten.
 
