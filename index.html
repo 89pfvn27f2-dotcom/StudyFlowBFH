@@ -415,11 +415,6 @@ const TRANSLATIONS={
     "fr": "Réduire les couleurs et les distractions",
     "it": "Riduci colori e distrazioni"
   },
-  "Refresh account": {
-    "de": "Konto aktualisieren",
-    "fr": "Actualiser le compte",
-    "it": "Aggiorna account"
-  },
   "Reminder": {
     "de": "Erinnerung",
     "fr": "Rappel",
@@ -509,11 +504,6 @@ const TRANSLATIONS={
     "de": "Deine Einträge werden in deinem Konto gespeichert. Erinnerungen erscheinen hier, solange StudyFlow BFH geöffnet ist.",
     "fr": "Tes entrées sont enregistrées dans ton compte. Les rappels s’affichent ici tant que StudyFlow BFH est ouvert.",
     "it": "Le tue voci vengono salvate nel tuo account. I promemoria appaiono qui mentre StudyFlow BFH è aperto."
-  },
-  "Your last change could not be saved online. Please refresh your account and try again.": {
-    "de": "Deine letzte Änderung konnte nicht online gespeichert werden. Aktualisiere dein Konto und versuche es erneut.",
-    "fr": "Ta dernière modification n’a pas pu être enregistrée en ligne. Actualise ton compte et réessaie.",
-    "it": "L’ultima modifica non è stata salvata online. Aggiorna l’account e riprova."
   },
   "Your profile": {
     "de": "Dein Profil",
@@ -664,11 +654,6 @@ const TRANSLATIONS={
     "de": "Die E-Mail-Adresse oder das Passwort ist falsch.",
     "fr": "L’adresse e-mail ou le mot de passe est incorrect.",
     "it": "L’indirizzo e-mail o la password non sono corretti."
-  },
-  "Your entries changed on another device. Close this form, refresh your account, then try again.": {
-    "de": "Deine Einträge wurden auf einem anderen Gerät geändert. Schliesse dieses Formular, aktualisiere dein Konto und versuche es erneut.",
-    "fr": "Tes entrées ont changé sur un autre appareil. Ferme ce formulaire, actualise ton compte et réessaie.",
-    "it": "Le tue voci sono state modificate su un altro dispositivo. Chiudi questo modulo, aggiorna l’account e riprova."
   },
   "Connection unavailable. Please check your internet connection and try again.": {
     "de": "Keine Verbindung. Prüfe deine Internetverbindung und versuche es erneut.",
@@ -1664,6 +1649,16 @@ const TRANSLATIONS={
     "de": "Fortschritt der heutigen Aufgaben",
     "fr": "Progression des tâches du jour",
     "it": "Avanzamento delle attività di oggi"
+  },
+  "Your last change could not be saved online. Reload the page to see the saved version, then try again.": {
+    "de": "Deine letzte Änderung konnte nicht online gespeichert werden. Lade die Seite neu, um den gespeicherten Stand zu sehen, und versuche es erneut.",
+    "fr": "Ta dernière modification n’a pas pu être enregistrée en ligne. Recharge la page pour voir la version enregistrée, puis réessaie.",
+    "it": "L’ultima modifica non è stata salvata online. Ricarica la pagina per vedere la versione salvata, poi riprova."
+  },
+  "Your entries changed on another device. Close this form, reload the page, then try again.": {
+    "de": "Deine Einträge wurden auf einem anderen Gerät geändert. Schliesse dieses Formular, lade die Seite neu und versuche es erneut.",
+    "fr": "Tes entrées ont changé sur un autre appareil. Ferme ce formulaire, recharge la page, puis réessaie.",
+    "it": "Le tue voci sono state modificate su un altro dispositivo. Chiudi questo modulo, ricarica la pagina e riprova."
   }
 };
 function supportedLanguage(value){return Object.hasOwn(LANGUAGES,value)}
@@ -1738,7 +1733,7 @@ function accountMessage(error){
   if(error?.code==='over_email_send_rate_limit')return 'Too many emails requested. Please wait before trying again.';
   if(error?.code==='email_not_confirmed')return 'Please confirm your email address before signing in.';
   if(error?.code==='invalid_credentials')return 'The email or password is incorrect.';
-  if(error?.message?.includes('STUDYFLOW_REVISION_CONFLICT'))return 'Your entries changed on another device. Close this form, refresh your account, then try again.';
+  if(error?.message?.includes('STUDYFLOW_REVISION_CONFLICT'))return 'Your entries changed on another device. Close this form, reload the page, then try again.';
   if(error?.message?.includes('Failed to fetch'))return 'Connection unavailable. Please check your internet connection and try again.';
   return 'The request could not be completed. Please try again.';
 }
@@ -1956,7 +1951,7 @@ function dailyMotivation(done,total){
 }
 function home(){const tasks=visibleItems().filter(x=>x.kind==='task'&&x.due?.slice(0,10)===today),done=tasks.filter(x=>x.done).length,pct=tasks.length?Math.floor(done*100/tasks.length):0;return `<div class="home-intro"><div class="greeting"><p class="eyebrow">${esc(new Date().toLocaleDateString(locale(),{weekday:'long',day:'numeric',month:'long'}))}</p><h1>${tx('Hello {name}, ready for today?',{name:userName(state.activeUser).split(' ')[0]})}</h1></div><div class="hero"><p class="eyebrow">${tx("✧ Your daily goal")}</p><h2>${tx(dailyMotivation(done,tasks.length))}</h2><p>${tasks.length?esc(countText('{count} task left today.','{count} tasks left today.',tasks.length-done)):tx('No tasks planned for today.')}</p>${tasks.length?`<div class="row"><strong>${pct}%</strong><span style="font-size:10px;opacity:.7">${tx("completed")}</span></div><div class="progress" role="progressbar" aria-label="${tx("Today's task progress")}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>`:''}</div></div><div class="home-sections"><section class="home-calendar"><p class="eyebrow">${tx("Your schedule")}</p><h2>${tx("Calendar")}</h2><p class="subtitle" style="margin:8px 0 16px">${tx("Deadlines, exams, and important university dates.")}</p>${calendar()}</section><section class="section home-today"><div class="row"><h2>${tx("Today")}</h2><button class="text-button" data-action="route" data-route="tasks">${tx("Show all")}</button></div>${sorted(visibleItems().filter(x=>x.kind!=='group'&&x.due?.slice(0,10)===today)).map(card).join('')||`<div class="empty">${tx("No items planned for today.")}</div>`}</section></div>`}
 function overview(kind){const labels={task:['YOUR TO-DOS','Tasks','All your tasks and deadlines at a glance.'],exam:['YOUR EXAMS','Exam overview','Exam details and permitted materials in one place.'],group:['YOUR GROUP WORK','Groups','Your groups, members, and shared tasks.']}[kind];const items=visibleItems().filter(x=>x.kind===kind&&(!filter||(x.title+' '+x.description+' '+moduleFor(x.moduleId).name).toLowerCase().includes(filter.toLowerCase())));return `<p class="eyebrow">${tx(labels[0])}</p><h1>${tx(labels[1])}</h1><p class="subtitle">${tx(labels[2])}</p><div class="row"><span class="count">${kind==='group'?esc(countText('{count} group','{count} groups',items.length)):tx('{count} open',{count:items.filter(x=>!x.done).length})}</span><button class="plus" data-action="add" data-kind="${kind}" aria-label="${tx(kind==='task'?'Add task':kind==='exam'?'Add exam':'Add group')}">${icon('plus')}</button></div><input type="search" class="search" id="list-search" placeholder="${tx(kind==='group'?'Search groups':kind==='exam'?'Search exams':'Search tasks')}" aria-label="${tx("Search")}" value="${esc(filter)}"><div id="item-list" class="entries-grid">${sorted(items).map(card).join('')||`<div class="empty">${tx(kind==='group'?'No groups found. Use + to create one.':kind==='exam'?'No exams found. Use + to create one.':'No tasks found. Use + to create one.')}</div>`}</div>`}
-function profile(){if(profileTab==='modules')return moduleSettings();if(profileTab==='appearance')return appearance();return `<p class="eyebrow">${tx("Your account")}</p><h1>${tx("Profile & reminders")}</h1><p class="subtitle">${tx("Personalize how StudyFlow BFH supports you.")}</p>${languagePicker('language-profile')}${!storageOk?`<div class="notice">${tx("Your last change could not be saved online. Please refresh your account and try again.")}</div>`:''}<div class="panel"><h2>${esc(state.profile.name)}</h2><p class="subtitle" style="margin:6px 0 12px">${esc(state.profile.degree)} · ${tx(state.profile.studyMode)} · ${tx(state.profile.semesterTerm)} ${esc(state.profile.semesterYear)}</p><button class="setting" data-action="profile-edit"><span><strong>${tx("Your profile")}</strong><small>${tx("Name, degree program, study mode, and semester")}</small></span>${icon('right')}</button><button class="setting" data-action="profile-tab" data-tab="modules"><span><strong>${tx("Studies & modules")}</strong><small>${tx('{modules} · names and colors',{modules:countText('{count} module','{count} modules',state.modules.length)})}</small></span>${icon('right')}</button><button class="setting" data-action="profile-tab" data-tab="appearance"><span><strong>${tx("Appearance")}</strong><small>${tx(state.theme)}${state.mono?' · '+tx('Monochrome'):''}</small></span>${icon('right')}</button></div><p class="help">${tx('Signed in as {email}',{email:currentUser.email})}</p><button class="action secondary" data-action="refresh-account">${tx("Refresh account")}</button><button class="action secondary" data-action="sign-out">${tx("Sign out")}</button><p class="help" style="margin-top:18px">${tx("Your entries are saved to your account. Reminders appear here while StudyFlow BFH is open.")}</p>`}
+function profile(){if(profileTab==='modules')return moduleSettings();if(profileTab==='appearance')return appearance();return `<p class="eyebrow">${tx("Your account")}</p><h1>${tx("Profile & reminders")}</h1><p class="subtitle">${tx("Personalize how StudyFlow BFH supports you.")}</p>${languagePicker('language-profile')}${!storageOk?`<div class="notice">${tx("Your last change could not be saved online. Reload the page to see the saved version, then try again.")}</div>`:''}<div class="panel"><h2>${esc(state.profile.name)}</h2><p class="subtitle" style="margin:6px 0 12px">${esc(state.profile.degree)} · ${tx(state.profile.studyMode)} · ${tx(state.profile.semesterTerm)} ${esc(state.profile.semesterYear)}</p><button class="setting" data-action="profile-edit"><span><strong>${tx("Your profile")}</strong><small>${tx("Name, degree program, study mode, and semester")}</small></span>${icon('right')}</button><button class="setting" data-action="profile-tab" data-tab="modules"><span><strong>${tx("Studies & modules")}</strong><small>${tx('{modules} · names and colors',{modules:countText('{count} module','{count} modules',state.modules.length)})}</small></span>${icon('right')}</button><button class="setting" data-action="profile-tab" data-tab="appearance"><span><strong>${tx("Appearance")}</strong><small>${tx(state.theme)}${state.mono?' · '+tx('Monochrome'):''}</small></span>${icon('right')}</button></div><p class="help">${tx('Signed in as {email}',{email:currentUser.email})}</p><button class="action secondary" data-action="sign-out">${tx("Sign out")}</button><p class="help" style="margin-top:18px">${tx("Your entries are saved to your account. Reminders appear here while StudyFlow BFH is open.")}</p>`}
 function moduleSettings(){return `<button class="text-button" data-action="profile-tab" data-tab="">${tx("‹ Back to profile")}</button><h1 style="margin-top:18px">${tx("Studies & modules")}</h1><p class="subtitle">${tx("Module names and colors apply to all your entries.")}</p><div class="panel">${state.modules.map(m=>`<div class="module-row" data-module="${esc(m.id)}"><input type="color" aria-label="${tx('Color for {name}',{name:m.name})}" data-module-color="${esc(m.id)}" value="${esc(m.color)}"><input type="text" aria-label="${tx("Module name")}" data-module-name="${esc(m.id)}" value="${esc(m.name)}" maxlength="80"><input type="text" class="code" aria-label="${tx("Module code")}" data-module-code="${esc(m.id)}" value="${esc(m.code)}" maxlength="10"><button data-action="remove-module" data-id="${esc(m.id)}" aria-label="${tx('Remove {name}',{name:m.name})}">${icon('close')}</button></div>`).join('')}<button class="action secondary" data-action="add-module">${tx("+ Add module")}</button></div><button class="action" data-action="save-modules">${tx("Save modules")}</button>`}
 function appearance(){return `<button class="text-button" data-action="profile-tab" data-tab="">${tx("‹ Back to profile")}</button><h1 style="margin-top:18px">${tx("Appearance")}</h1><p class="subtitle">${tx("Choose colors that match the way you work.")}</p><div class="panel"><button class="setting" data-action="mono" aria-pressed="${state.mono}"><span><strong>${tx("Monochrome mode")}</strong><small>${tx("Reduce colors and distractions")}</small></span><span class="switch ${state.mono?'on':''}"><span></span></span></button><div class="themes" style="margin-top:18px">${Object.entries(palette).map(([name,p])=>`<button class="theme ${name===state.theme?'selected':''}" data-action="theme" data-theme="${name}" aria-pressed="${name===state.theme}"><i class="swatch" style="background:linear-gradient(90deg,${p[0]} 50%,${p[1]} 50%)"></i>${tx(name)}${name===state.theme?' ✓':''}</button>`).join('')}</div></div>`}
 function render(){syncDocumentLanguage();if(!currentUser||!cloudLoaded||isRecovery){renderAuth();return}if(setupActive()){renderSetup();return}const scroll=document.querySelector('.content')?.scrollTop||0;setLayout('app');applyTheme();app.innerHTML=`${brandHeader()}<main class="content view-${esc(route)}" id="main" tabindex="-1">${route==='home'?home():route==='tasks'?overview('task'):route==='exams'?overview('exam'):route==='groups'?overview('group'):profile()}</main>${nav()}`;document.querySelector('.content').scrollTop=scroll;if(overlay)renderOverlay();checkReminders()}
@@ -2088,7 +2083,6 @@ app.addEventListener('click',async e=>{
    else if(needsSetup()&&setupStep===2&&['setup-add-module','setup-remove-module','setup-back'].includes(a))changeSetupModules(a,id,document.getElementById('setup-form'));
    return;
  }
- if(a==='refresh-account'){await refreshAccount();return}
  if(isSaving){toast('Saving your changes…');return}
  if(a==='member-profile'){overlay={type:'member',memberId:b.dataset.member,groupId:b.dataset.group};renderOverlay()}
  else if(a==='save-form')await saveForm(b.closest('form'));

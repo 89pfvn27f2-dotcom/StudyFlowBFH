@@ -30,6 +30,10 @@ Alle Konten durchlaufen vor der Nutzung einmal eine Einrichtung. Gespeicherte An
 
 Die Eingaben werden erst gemeinsam am Ende gespeichert. Bestehende Modul-IDs und verknüpfte Aufgaben bleiben erhalten; verwendete Module können während der Einrichtung nicht entfernt werden. Nach dem Speichern erklärt eine Meldung, dass spätere Änderungen im Profil möglich sind. Der Abschluss wird im Profil des Kontos gespeichert und gilt damit auch auf anderen Geräten.
 
+## Automatische Aktualisierung
+
+Der manuelle Button **Refresh account** wurde aus dem Profil entfernt. Die App lädt Kontodaten weiterhin beim Zurückkehren zum Browserfenster sowie alle 30 Sekunden automatisch nach. Während der Einrichtung, beim Speichern und bei geöffneten Formularen oder Details wird die Aktualisierung ausgesetzt, damit laufende Eingaben erhalten bleiben. Hinweise bei Speicherfehlern oder Konflikten erklären in der ausgewählten Sprache, dass die Seite neu geladen werden soll.
+
 ## Logo und App-Name
 
 Der vollständige Name lautet **StudyFlow BFH**. Das ausgewählte Buchsymbol mit geschwungenem Pfeil erscheint in allen Kopfzeilen und als Browser-Symbol. Die Bilddatei enthält nur das Symbol; der Name daneben bleibt lesbarer HTML-Text. Im Schwarz-Weiss-Modus wird auch das Logo ohne Farbe dargestellt.

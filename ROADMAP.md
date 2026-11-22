@@ -11,7 +11,7 @@ Die Änderungen werden einzeln in dieser Reihenfolge umgesetzt.
 - [x] **7. Gruppen darstellen:** Gruppen erhalten ein Gruppensymbol und eine Gesamtanzahl. Sie sind nicht abhakbar, erscheinen nicht als erledigt und zählen nicht zur Aufgabenerledigung. Verknüpfte Gruppenaufgaben bleiben abhakbar.
 - **8. Gruppenaufgaben zuweisen: Entfällt auf Wunsch.** Keine zusätzliche Kontoverknüpfung und keine Zuweisung von Aufgaben an andere Personen. Die bestehenden Gruppenfunktionen bleiben erhalten.
 - [x] **9. Motivation auf der Homepage:** Das Tagesziel richtet sich nach dem Anteil der erledigten heutigen Aufgaben. Je drei Sprüche für noch nicht begonnen, erste Fortschritte, ab 25 %, ab 50 %, ab 75 % und vollständig erledigt; ohne heutige Aufgaben stattdessen Planungshinweise. Beim Zurückkehren zur Startseite und bei geändertem Fortschritt wechselt der passende Spruch. Gruppen und Prüfungen zählen nicht mit. Alle Texte sind in den vier App-Sprachen verfügbar.
-- [ ] **10. Refresh account:** Den manuellen Button entfernen.
+- [x] **10. Refresh account:** Den manuellen Button und seinen Klick-Handler entfernt. Die automatische Aktualisierung bleibt aktiv. Hinweise bei Speicherfehlern und Konflikten verweisen in allen vier Sprachen auf das Neuladen der Seite.
 - [ ] **11. Konto löschen:** Eine Funktion zum Löschen des eigenen Kontos mit klarer Bestätigung ergänzen.
 
 
