@@ -44,6 +44,8 @@ Anmeldung und Einrichtung behalten eine gut lesbare Formularbreite. Eintragsform
 
 Beim Anlegen oder Bearbeiten einer Gruppe kann ein eigenes Modul oder die zusätzliche Option **Keinem Modul zugeordnet** gewählt werden. Bei einer Gruppe ohne feste Zuordnung wählt man das Modul für jede Aufgabe separat. Eine Gruppe mit einem festen Modul gibt dieses an ihre Gruppenaufgaben weiter, auch wenn ein Mitglied andere eigene Module angelegt hat. Geteilte Aufgaben enthalten eine Modulbeschreibung, damit andere Mitglieder den richtigen Modulnamen und die Farbe sehen.
 
+Gruppen werden mit einem eigenen Gruppensymbol und einer Gesamtanzahl dargestellt. Sie haben kein Abhakfeld und keinen Erledigungsstatus. Alte Gruppen-Erledigungswerte werden beim Laden ignoriert und beim Speichern weggelassen. Aufgaben innerhalb der Gruppe behalten ihren eigenen Erledigungsstatus und können weiterhin abgeschlossen und wieder geöffnet werden. Gruppen zählen nicht zu Tagesaufgaben oder Kalenderterminen.
+
 Gruppen besitzen keine Datums- oder Erinnerungsfelder und lösen keine Erinnerungen aus. Bestehende Gruppen werden beim Laden ohne Termin und Erinnerung dargestellt; beim nächsten Speichern durch die Gruppenleitung werden `due: null` und `reminder: "none"` geschrieben. Aufgaben und Prüfungen behalten ihre Termine, Erinnerungen und Gruppenverknüpfungen. Beim Entfernen einer festen Gruppenzuordnung werden die Module vorhandener Aufgaben nicht geleert.
 
 Die bestehende JSON-Speicherung unterstützt diese Angaben; eine Schemaänderung ist nicht erforderlich. Die Zugriffsregeln bleiben bestehen: Mitglieder können ihre eigenen Aufgaben speichern, ohne die Gruppe einer anderen Person zu überschreiben.

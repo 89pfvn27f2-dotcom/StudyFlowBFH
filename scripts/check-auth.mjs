@@ -739,6 +739,65 @@ await check('group task module control unlocks and restores the personal choice 
   assert.equal(options.some(o => o.value === 'foreign-module'), false);
 });
 
+await check('groups have no completion controls or completed styling while their tasks remain actionable', async () => {
+  const f = await groupFixture([rawGroup('group-one', 'module-one', { done: true })], [
+    { id: 'group-task', owner_id: 'account-a', group_id: 'group-one', data: { kind: 'task', title: 'Shared task', moduleId: 'module-one', due: '2026-12-04T12:00', reminder: 'none', done: true } }
+  ]);
+  // Cover stale in-memory completion flags as well as normalized account data.
+  f.run("state.items.find(i=>i.id==='group-one').done=true;");
+  const card = f.run("card(state.items.find(i=>i.id==='group-one'))");
+  assert.doesNotMatch(card, /data-action="toggle"|class="card completed"/);
+  const detail = f.run("detailMarkup(state.items.find(i=>i.id==='group-one'))");
+  assert.doesNotMatch(detail, /data-action="toggle" data-id="group-one"/);
+  assert.match(detail, /data-action="toggle" data-id="group-task"/);
+  assert.match(detail, /data-action="edit" data-id="group-one"/);
+  assert.match(detail, /data-action="delete-ask" data-id="group-one"/);
+});
+
+await check('group totals include previously completed groups without changing task completion data', async () => {
+  const f = await groupFixture([rawGroup('group-one', 'module-one', { done: true }), rawGroup('group-two', '', { done: false })], [
+    { id: 'finished-task', owner_id: 'account-a', group_id: 'group-one', data: { kind: 'task', title: 'Finished task', moduleId: 'module-one', due: '2026-12-04T12:00', reminder: 'none', done: true } },
+    { id: 'open-task', owner_id: 'account-a', group_id: null, data: { kind: 'task', title: 'Open task', moduleId: 'module-two', due: '2026-12-05T12:00', reminder: 'none', done: false } }
+  ]);
+  assert.equal(f.run("state.items.filter(i=>i.kind==='group').every(i=>!Object.hasOwn(i,'done'))"), true);
+  for (const [code, total] of [['de', '2 Gruppen'], ['fr', '2 groupes'], ['it', '2 gruppi'], ['en', '2 groups']]) {
+    f.run('language=' + JSON.stringify(code));
+    assert.ok(f.run("overview('group')").includes('<span class="count">' + total + '</span>'));
+  }
+  await f.run('persist()');
+  const payload = f.context.__savedAccounts.at(-1).payload;
+  assert.equal(payload.groups_data.every(g => !Object.hasOwn(g.data, 'done')), true);
+  assert.equal(payload.items_data.find(i => i.id === 'finished-task').data.done, true);
+  assert.equal(payload.items_data.find(i => i.id === 'open-task').data.done, false);
+  assert.equal(payload.items_data.find(i => i.id === 'finished-task').group_id, 'group-one');
+});
+
+await check('stale group completion actions are ignored while completing and reopening a task still works', async () => {
+  const f = await groupFixture([rawGroup('group-one')], [
+    { id: 'task-one', owner_id: 'account-a', group_id: 'group-one', data: { kind: 'task', title: 'Task', moduleId: 'module-one', due: '2026-12-04T12:00', reminder: 'none', done: false } }
+  ]);
+  await setupClick(f, 'toggle', { id: 'group-one' });
+  assert.equal(f.context.__savedAccounts.length, 0);
+  assert.equal(f.run("Object.hasOwn(state.items.find(i=>i.id==='group-one'),'done')"), false);
+  await setupClick(f, 'toggle', { id: 'task-one' });
+  assert.equal(f.run("state.items.find(i=>i.id==='task-one').done"), true);
+  assert.equal(f.context.__savedAccounts.at(-1).payload.items_data[0].data.done, true);
+  await setupClick(f, 'toggle', { id: 'task-one' });
+  assert.equal(f.run("state.items.find(i=>i.id==='task-one').done"), false);
+  assert.equal(f.context.__savedAccounts.at(-1).payload.items_data[0].data.done, false);
+});
+
+await check('legacy dated groups never count as tasks or calendar entries', async () => {
+  const f = await groupFixture();
+  f.run("state.items=[{id:'legacy-group',kind:'group',ownerId:'account-a',title:'Hidden dated group',moduleId:'module-one',memberIds:[],done:true,due:today+'T18:00',reminder:'none'},{id:'task-today',kind:'task',ownerId:'account-a',title:'Today task',moduleId:'module-one',priority:'Normal',due:today+'T18:00',reminder:'none',done:false},{id:'exam-today',kind:'exam',ownerId:'account-a',title:'Today exam',moduleId:'module-two',due:today+'T19:00',reminder:'none'}];");
+  const home = f.run('home()');
+  assert.match(home, /<strong>0%<\/strong>/);
+  assert.match(home, /1 task left today\./);
+  assert.doesNotMatch(home, /Hidden dated group/);
+  assert.match(home, /Today task/); assert.match(home, /Today exam/);
+  assert.match(home, /, 2 events"/);
+});
+
 console.log('All ' + passed + ' account, setup, language and group checks passed. No network requests or emails were sent.');
 
 
