@@ -4,7 +4,7 @@ StudyFlow bündelt Aufgaben, Prüfungen und Gruppenarbeiten. Diese Version verwe
 
 ## App auf GitHub Pages veröffentlichen
 
-Die App ist in `index.html` vollständig enthalten. Für GitHub Pages ist kein npm-Build erforderlich. `.nojekyll` sorgt dafür, dass GitHub die Datei unverändert ausliefert. Die vorhandenen Figma-Dateien und npm-Befehle bleiben für die Bearbeitung mit Figma erhalten.
+Die App wird über `index.html` ausgeliefert; das ausgewählte Buchlogo liegt in `assets/studyflow-bfh-logo.png`. Der Ordner `assets` muss mitveröffentlicht werden. Für GitHub Pages ist kein npm-Build erforderlich. `.nojekyll` sorgt dafür, dass GitHub die Datei unverändert ausliefert. Die vorhandenen Figma-Dateien und npm-Befehle bleiben für die Bearbeitung mit Figma erhalten.
 
 1. Unter **Settings → Pages** als Quelle **Deploy from a branch** wählen.
 2. **main** und **/(root)** auswählen und speichern.
@@ -29,6 +29,10 @@ Unter **Authentication → Email** einen eigenen SMTP-Anbieter oder einen **Send
 Alle Konten durchlaufen vor der Nutzung einmal eine Einrichtung. Gespeicherte Angaben und Module werden vorausgefüllt. Name, Studiengang, Studienform, Semester und Jahr sind Pflicht; vor dem Abschluss muss mindestens ein benanntes eigenes Modul vorhanden sein. Studiengang und Studienform werden für neue Konten nicht vorausgewählt.
 
 Die Eingaben werden erst gemeinsam am Ende gespeichert. Bestehende Modul-IDs und verknüpfte Aufgaben bleiben erhalten; verwendete Module können während der Einrichtung nicht entfernt werden. Nach dem Speichern erklärt eine Meldung, dass spätere Änderungen im Profil möglich sind. Der Abschluss wird im Profil des Kontos gespeichert und gilt damit auch auf anderen Geräten.
+
+## Logo und App-Name
+
+Der vollständige Name lautet **StudyFlow BFH**. Das ausgewählte Buchsymbol mit geschwungenem Pfeil erscheint in allen Kopfzeilen und als Browser-Symbol. Die Bilddatei enthält nur das Symbol; der Name daneben bleibt lesbarer HTML-Text. Im Schwarz-Weiss-Modus wird auch das Logo ohne Farbe dargestellt.
 
 ## Sprache
 
