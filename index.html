@@ -78,6 +78,8 @@
 
 
 .group-symbol{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:10px;background:var(--soft);color:var(--primary)}.group-symbol svg{width:21px;height:21px}
+
+.account-delete-fields{border:0;padding:0;margin:0;min-width:0}.action.account-delete-confirm{background:#9c2f3e;color:#fff}.mono .action.account-delete-confirm{background:#303030;color:#fff}
 </style></head><body><div id="app" class="phone"></div>
 <script>
 (()=>{var Zs=Object.defineProperty;var en=(t,e)=>{for(var r in e)Zs(t,r,{get:e[r],enumerable:!0})};var wr={};en(wr,{AuthAdminApi:()=>Hs,AuthApiError:()=>nt,AuthClient:()=>qt,AuthError:()=>ee,AuthImplicitGrantRedirectError:()=>he,AuthInvalidCredentialsError:()=>ue,AuthInvalidJwtError:()=>te,AuthInvalidTokenResponseError:()=>G,AuthPKCECodeVerifierMissingError:()=>it,AuthPKCEGrantCodeExchangeError:()=>$e,AuthRefreshDiscardedError:()=>Ue,AuthRetryableFetchError:()=>de,AuthSessionMissingError:()=>O,AuthUnknownError:()=>P,AuthWeakPasswordError:()=>De,CustomAuthError:()=>U,FunctionRegion:()=>me,FunctionsError:()=>ie,FunctionsFetchError:()=>ye,FunctionsHttpError:()=>ae,FunctionsRelayError:()=>oe,GoTrueAdminApi:()=>ne,GoTrueClient:()=>Mt,NavigatorLockAcquireTimeoutError:()=>Me,PostgrestError:()=>le,REALTIME_CHANNEL_STATES:()=>Jr,REALTIME_LISTEN_TYPES:()=>Q,REALTIME_POSTGRES_CHANGES_LISTEN_EVENT:()=>Et,REALTIME_PRESENCE_LISTEN_EVENTS:()=>St,REALTIME_SUBSCRIBE_STATES:()=>q,RealtimeChannel:()=>we,RealtimeClient:()=>be,RealtimePostgresFilterBuilder:()=>ce,RealtimePresence:()=>_e,SIGN_OUT_SCOPES:()=>ut,StorageApiError:()=>tt,SupabaseClient:()=>Qs,WebSocketFactory:()=>ft,createClient:()=>po,isAuthApiError:()=>Ct,isAuthError:()=>y,isAuthImplicitGrantRedirectError:()=>tr,isAuthPKCECodeVerifierMissingError:()=>yi,isAuthRefreshDiscardedError:()=>Pt,isAuthRetryableFetchError:()=>Se,isAuthSessionMissingError:()=>Be,isAuthWeakPasswordError:()=>mi,lockInternals:()=>F,navigatorLock:()=>Ns,postgresChangesFilter:()=>Jt,processLock:()=>Ls});var tn=Symbol.for("@supabase/supabase-js.traceContextExtractor");function br(){return globalThis[tn]}function ge(t,e){var r={};for(var s in t)Object.prototype.hasOwnProperty.call(t,s)&&e.indexOf(s)<0&&(r[s]=t[s]);if(t!=null&&typeof Object.getOwnPropertySymbols=="function")for(var n=0,s=Object.getOwnPropertySymbols(t);n<s.length;n++)e.indexOf(s[n])<0&&Object.prototype.propertyIsEnumerable.call(t,s[n])&&(r[s[n]]=t[s[n]]);return r}function Sr(t,e,r,s){function n(i){return i instanceof r?i:new r(function(o){o(i)})}return new(r||(r=Promise))(function(i,o){function a(u){try{c(s.next(u))}catch(h){o(h)}}function l(u){try{c(s.throw(u))}catch(h){o(h)}}function c(u){u.done?i(u.value):n(u.value).then(a,l)}c((s=s.apply(t,e||[])).next())})}var Er=t=>t?(...e)=>t(...e):(...e)=>fetch(...e);var ie=class extends Error{constructor(e,r="FunctionsError",s){super(e),this.name=r,this.context=s}toJSON(){return{name:this.name,message:this.message,context:this.context}}},ye=class extends ie{constructor(e){super("Failed to send a request to the Edge Function","FunctionsFetchError",e)}},oe=class extends ie{constructor(e){super("Relay Error invoking the Edge Function","FunctionsRelayError",e)}},ae=class extends ie{constructor(e){super("Edge Function returned a non-2xx status code","FunctionsHttpError",e)}},me;(function(t){t.Any="any",t.ApNortheast1="ap-northeast-1",t.ApNortheast2="ap-northeast-2",t.ApSouth1="ap-south-1",t.ApSoutheast1="ap-southeast-1",t.ApSoutheast2="ap-southeast-2",t.CaCentral1="ca-central-1",t.EuCentral1="eu-central-1",t.EuWest1="eu-west-1",t.EuWest2="eu-west-2",t.EuWest3="eu-west-3",t.SaEast1="sa-east-1",t.UsEast1="us-east-1",t.UsWest1="us-west-1",t.UsWest2="us-west-2"})(me||(me={}));var We=class{constructor(e,{headers:r={},customFetch:s,region:n=me.Any}={}){this.url=e,this.headers=r,this.region=n,this.fetch=Er(s)}setAuth(e){this.headers.Authorization=`Bearer ${e}`}invoke(e){return Sr(this,arguments,void 0,function*(r,s={}){var n,i;let o,a,l;try{let{headers:c,method:u,body:h,signal:f,timeout:d}=s,p={},{region:g}=s;g||(g=this.region);let m=new URL(`${this.url}/${r}`);g&&g!=="any"&&(p["x-region"]=g,m.searchParams.set("forceFunctionRegion",g));let _,b=!!c&&Object.keys(c).some(Ve=>Ve.toLowerCase()==="content-type");h&&!b?typeof Blob<"u"&&h instanceof Blob||h instanceof ArrayBuffer?(p["Content-Type"]=h.type||"application/octet-stream",_=h):typeof h=="string"?(p["Content-Type"]="text/plain",_=h):typeof FormData<"u"&&h instanceof FormData?_=h:(p["Content-Type"]="application/json",_=JSON.stringify(h)):h&&typeof h!="string"&&!(typeof Blob<"u"&&h instanceof Blob)&&!(h instanceof ArrayBuffer)&&!(typeof FormData<"u"&&h instanceof FormData)?_=JSON.stringify(h):_=h;let w=f;d&&(a=new AbortController,o=setTimeout(()=>a.abort(),d),f?(w=a.signal,l=()=>a.abort(),f.addEventListener("abort",l)):w=a.signal);let E=yield this.fetch(m.toString(),{method:u||"POST",headers:Object.assign(Object.assign(Object.assign({},p),this.headers),c),body:_,signal:w}).catch(Ve=>{throw new ye(Ve)}),j=E.headers.get("x-relay-error");if(j&&j==="true")throw new oe(E);if(!E.ok)throw new ae(E);let k=((n=E.headers.get("Content-Type"))!==null&&n!==void 0?n:"text/plain").split(";")[0].trim().toLowerCase(),R;return k==="application/json"?R=yield E.json():k==="application/octet-stream"||k==="application/pdf"?R=yield E.blob():k==="text/event-stream"?R=E:k==="multipart/form-data"?R=yield E.formData():R=yield E.text(),{data:R,error:null,response:E}}catch(c){return{data:null,error:c,response:c instanceof ae||c instanceof oe?c.context:void 0}}finally{o&&clearTimeout(o),l&&((i=s.signal)===null||i===void 0||i.removeEventListener("abort",l))}})}};var le=class extends Error{constructor(t){super(t.message),this.name="PostgrestError",this.details=t.details,this.hint=t.hint,this.code=t.code}toJSON(){return{name:this.name,message:this.message,details:this.details,hint:this.hint,code:this.code}}},xr=3,kr=t=>Math.min(1e3*2**t,3e4),rn=[520,503],Cr=["GET","HEAD","OPTIONS"];function Ke(t){"@babel/helpers - typeof";return Ke=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(e){return typeof e}:function(e){return e&&typeof Symbol=="function"&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},Ke(t)}function sn(t,e){if(Ke(t)!="object"||!t)return t;var r=t[Symbol.toPrimitive];if(r!==void 0){var s=r.call(t,e||"default");if(Ke(s)!="object")return s;throw new TypeError("@@toPrimitive must return a primitive value.")}return(e==="string"?String:Number)(t)}function nn(t){var e=sn(t,"string");return Ke(e)=="symbol"?e:e+""}function on(t,e,r){return(e=nn(e))in t?Object.defineProperty(t,e,{value:r,enumerable:!0,configurable:!0,writable:!0}):t[e]=r,t}function Tr(t,e){var r=Object.keys(t);if(Object.getOwnPropertySymbols){var s=Object.getOwnPropertySymbols(t);e&&(s=s.filter(function(n){return Object.getOwnPropertyDescriptor(t,n).enumerable})),r.push.apply(r,s)}return r}function ve(t){for(var e=1;e<arguments.length;e++){var r=arguments[e]!=null?arguments[e]:{};e%2?Tr(Object(r),!0).forEach(function(s){on(t,s,r[s])}):Object.getOwnPropertyDescriptors?Object.defineProperties(t,Object.getOwnPropertyDescriptors(r)):Tr(Object(r)).forEach(function(s){Object.defineProperty(t,s,Object.getOwnPropertyDescriptor(r,s))})}return t}function Ar(t,e){return new Promise(r=>{if(e?.aborted){r();return}let s=setTimeout(()=>{e?.removeEventListener("abort",n),r()},t);function n(){clearTimeout(s),r()}e?.addEventListener("abort",n)})}function an(t,e,r,s){return!(!s||r>=xr||!Cr.includes(t)||!rn.includes(e))}async function Pr(t,e,r,s){let n=0;for(;;){let l=ve({},r.headers);n>0&&(l["X-Retry-Count"]=String(n));let c;try{c=await t(e,{method:r.method,headers:l,body:r.body,signal:r.signal})}catch(u){var i;if(u?.name==="AbortError"||u?.code==="ABORT_ERR"||u?.name==="TimeoutError"&&(!((i=r.signal)===null||i===void 0)&&i.aborted)||!Cr.includes(r.method))throw u;if(s&&n<xr){let h=kr(n);n++,await Ar(h,r.signal);continue}throw u}if(an(r.method,c.status,n,s)){var o,a;let u=(o=(a=c.headers)===null||a===void 0?void 0:a.get("Retry-After"))!==null&&o!==void 0?o:null,h=u!==null?Math.max(0,parseInt(u,10)||0)*1e3:kr(n);await c.text(),n++,await Ar(h,r.signal);continue}return c}}var ln=class{constructor(t){var e,r,s,n,i;this.shouldThrowOnError=!1,this.retryEnabled=!0,this.method=t.method,this.url=t.url,this.headers=new Headers(t.headers),this.schema=t.schema,this.body=t.body,this.shouldThrowOnError=(e=t.shouldThrowOnError)!==null&&e!==void 0?e:!1,this.signal=t.signal,this.isMaybeSingle=(r=t.isMaybeSingle)!==null&&r!==void 0?r:!1,this.shouldStripNulls=(s=t.shouldStripNulls)!==null&&s!==void 0?s:!1,this.urlLengthLimit=(n=t.urlLengthLimit)!==null&&n!==void 0?n:8e3,this.retryEnabled=(i=t.retry)!==null&&i!==void 0?i:!0,t.fetch?this.fetch=t.fetch:this.fetch=fetch}throwOnError(){return this.shouldThrowOnError=!0,this}stripNulls(){if(this.headers.get("Accept")==="text/csv")throw new Error("stripNulls() cannot be used with csv()");return this.shouldStripNulls=!0,this}setHeader(t,e){return this.headers=new Headers(this.headers),this.headers.set(t,e),this}retry(t){return this.retryEnabled=t,this}then(t,e){var r=this;if(this.schema===void 0||(["GET","HEAD"].includes(this.method)?this.headers.set("Accept-Profile",this.schema):this.headers.set("Content-Profile",this.schema)),this.method!=="GET"&&this.method!=="HEAD"&&this.headers.set("Content-Type","application/json"),this.shouldStripNulls){let o=this.headers.get("Accept");o==="application/vnd.pgrst.object+json"?this.headers.set("Accept","application/vnd.pgrst.object+json;nulls=stripped"):(!o||o==="application/json")&&this.headers.set("Accept","application/vnd.pgrst.array+json;nulls=stripped")}let s=this.fetch,i=(async()=>{let o={};r.headers.forEach((l,c)=>{o[c]=l});let a=await Pr(s,r.url.toString(),{method:r.method,headers:o,body:JSON.stringify(r.body,(l,c)=>typeof c=="bigint"?c.toString():c),signal:r.signal},r.retryEnabled);return await r.processResponse(a)})();return this.shouldThrowOnError||(i=i.catch(o=>{var a;let l="",c="",u="",h=o?.cause;if(h){var f,d,p,g;let b=(f=h?.message)!==null&&f!==void 0?f:"",w=(d=h?.code)!==null&&d!==void 0?d:"";l=`${(p=o?.name)!==null&&p!==void 0?p:"FetchError"}: ${o?.message}`,l+=`
@@ -1659,6 +1661,86 @@ const TRANSLATIONS={
     "de": "Deine Einträge wurden auf einem anderen Gerät geändert. Schliesse dieses Formular, lade die Seite neu und versuche es erneut.",
     "fr": "Tes entrées ont changé sur un autre appareil. Ferme ce formulaire, recharge la page, puis réessaie.",
     "it": "Le tue voci sono state modificate su un altro dispositivo. Chiudi questo modulo, ricarica la pagina e riprova."
+  },
+  "Delete account": {
+    "de": "Konto löschen",
+    "fr": "Supprimer le compte",
+    "it": "Elimina account"
+  },
+  "Delete your account?": {
+    "de": "Dein Konto löschen?",
+    "fr": "Supprimer ton compte ?",
+    "it": "Eliminare il tuo account?"
+  },
+  "Your account, profile, modules, own entries and groups you created will be permanently deleted. This cannot be undone.": {
+    "de": "Dein Konto, dein Profil, deine Module, deine eigenen Einträge und die von dir erstellten Gruppen werden dauerhaft gelöscht. Dies lässt sich nicht rückgängig machen.",
+    "fr": "Ton compte, ton profil, tes modules, tes propres entrées et les groupes que tu as créés seront supprimés définitivement. Cette action est irréversible.",
+    "it": "Il tuo account, il tuo profilo, i tuoi moduli, le tue voci e i gruppi che hai creato saranno eliminati definitivamente. Questa azione è irreversibile."
+  },
+  "Other members’ tasks in your groups will become their personal tasks. You will leave groups created by others.": {
+    "de": "Aufgaben anderer Mitglieder in deinen Gruppen bleiben als deren persönliche Aufgaben erhalten. Aus Gruppen anderer Personen trittst du aus.",
+    "fr": "Les tâches des autres membres de tes groupes deviendront leurs tâches personnelles. Tu quitteras les groupes créés par d’autres personnes.",
+    "it": "Le attività degli altri membri nei tuoi gruppi diventeranno le loro attività personali. Uscirai dai gruppi creati da altre persone."
+  },
+  "Confirm your email": {
+    "de": "E-Mail-Adresse zur Bestätigung",
+    "fr": "Confirme ton adresse e-mail",
+    "it": "Conferma la tua e-mail"
+  },
+  "Current password": {
+    "de": "Aktuelles Passwort",
+    "fr": "Mot de passe actuel",
+    "it": "Password attuale"
+  },
+  "Delete my account permanently": {
+    "de": "Mein Konto dauerhaft löschen",
+    "fr": "Supprimer définitivement mon compte",
+    "it": "Elimina definitivamente il mio account"
+  },
+  "Keep my account": {
+    "de": "Mein Konto behalten",
+    "fr": "Garder mon compte",
+    "it": "Mantieni il mio account"
+  },
+  "Your password is incorrect. Your account was not deleted.": {
+    "de": "Dein Passwort ist falsch. Dein Konto wurde nicht gelöscht.",
+    "fr": "Ton mot de passe est incorrect. Ton compte n’a pas été supprimé.",
+    "it": "La password non è corretta. Il tuo account non è stato eliminato."
+  },
+  "Please enter your password again to confirm the deletion.": {
+    "de": "Gib dein Passwort erneut ein, um die Löschung zu bestätigen.",
+    "fr": "Saisis à nouveau ton mot de passe pour confirmer la suppression.",
+    "it": "Inserisci di nuovo la password per confermare l’eliminazione."
+  },
+  "Type your account email address to confirm.": {
+    "de": "Gib zur Bestätigung die E-Mail-Adresse deines Kontos ein.",
+    "fr": "Saisis l’adresse e-mail de ton compte pour confirmer.",
+    "it": "Inserisci l’indirizzo e-mail del tuo account per confermare."
+  },
+  "Enter your current password to continue.": {
+    "de": "Gib dein aktuelles Passwort ein, um fortzufahren.",
+    "fr": "Saisis ton mot de passe actuel pour continuer.",
+    "it": "Inserisci la password attuale per continuare."
+  },
+  "Your account still owns uploaded files. Please contact the administrator before deleting it.": {
+    "de": "Deinem Konto gehören noch hochgeladene Dateien. Wende dich vor dem Löschen an die Administration.",
+    "fr": "Ton compte possède encore des fichiers téléversés. Contacte l’administration avant de le supprimer.",
+    "it": "Il tuo account possiede ancora file caricati. Contatta l’amministrazione prima di eliminarlo."
+  },
+  "Sign out and sign in again before deleting your account.": {
+    "de": "Melde dich ab und wieder an, bevor du dein Konto löschst.",
+    "fr": "Déconnecte-toi et reconnecte-toi avant de supprimer ton compte.",
+    "it": "Esci e accedi di nuovo prima di eliminare il tuo account."
+  },
+  "Your account has been deleted.": {
+    "de": "Dein Konto wurde gelöscht.",
+    "fr": "Ton compte a été supprimé.",
+    "it": "Il tuo account è stato eliminato."
+  },
+  "Deleting your account…": {
+    "de": "Dein Konto wird gelöscht…",
+    "fr": "Suppression de ton compte…",
+    "it": "Eliminazione del tuo account…"
   }
 };
 function supportedLanguage(value){return Object.hasOwn(LANGUAGES,value)}
@@ -1692,7 +1774,7 @@ function restoreVisibleForm(snapshot){
 }
 async function changeLanguage(value,control){
   if(!supportedLanguage(value)||value===language)return false;
-  if(authBusy||isLoading||isSaving){if(control)control.value=language;return false}
+  if(authBusy||isLoading||isSaving||pendingAccountDeletion){if(control)control.value=language;return false}
   const previous=language,snapshot=captureVisibleForm();
   if(currentUser&&cloudLoaded&&setupActive()&&!setupNotice)captureSetupForm(document.getElementById('setup-form'));
   language=value;
@@ -1716,9 +1798,11 @@ async function changeLanguage(value,control){
 // Genuine Supabase authentication. The browser contains a publishable key only.
 const ACCOUNT_URL='https://rvzthkabxdxaftbwhvvz.supabase.co';
 const ACCOUNT_KEY='sb_publishable_Lg9kOtA8C2R5zxpJGtE-3w_NaaxzXW4';
+const ACCOUNT_STORAGE_KEY='studyflow-account-rvzthkabxdxaftbwhvvz';
+let pendingAccountDeletion=null;
 const ACCOUNT_REDIRECT=['https:','http:'].includes(location.protocol)?new URL('.',location.href).href:undefined;
 const recoveryFromUrl=location.hash.includes('type=recovery');
-const accountClient=window.StudyFlowSupabase.createClient(ACCOUNT_URL,ACCOUNT_KEY,{auth:{storageKey:'studyflow-account-rvzthkabxdxaftbwhvvz',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const accountClient=window.StudyFlowSupabase.createClient(ACCOUNT_URL,ACCOUNT_KEY,{auth:{storageKey:ACCOUNT_STORAGE_KEY,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let currentUser=null,cloudLoaded=false,cloudRevision=0,isSaving=false,isLoading=false;
 let lastSavedState=null,authMode='login',authMessage='',authError='',isRecovery=recoveryFromUrl,authBusy=false;
 let authEpoch=0,bootPromise=null;
@@ -1772,8 +1856,9 @@ async function submitAccount(form){
   }catch(error){authFormError(form,accountMessage(error))}
   finally{authBusy=false;if(button.isConnected){button.disabled=false;button.textContent=oldText}else if(!cloudLoaded&&!isLoading)renderAuth()}
 }
-function clearAccount(){authEpoch++;resetSetup();currentUser=null;cloudLoaded=false;isLoading=false;cloudRevision=0;state=emptyAccount();lastSavedState=null;overlay=null;route='home';profileTab='';filter='';shownReminders.clear();authError='';authMessage='';isRecovery=false;renderAuth()}
+function clearAccount(message=''){const notice=message||(!currentUser&&authMessage==='Your account has been deleted.'?authMessage:'');cancelPendingAccountDeletion();authEpoch++;resetSetup();currentUser=null;cloudLoaded=false;isLoading=false;cloudRevision=0;state=emptyAccount();lastSavedState=null;overlay=null;route='home';profileTab='';filter='';shownReminders.clear();authError='';authMessage=notice;isRecovery=false;renderAuth()}
 async function signOutAccount(){
+  if(pendingAccountDeletion){toast('Deleting your account…');return}
   if(isSaving){toast('Please wait for your changes to finish saving.');return}
   const {error}=await accountClient.auth.signOut();if(error){toast('Sign out did not finish. Please try again.');return}clearAccount();
 }
@@ -1782,7 +1867,7 @@ async function bootAccount(session){
   if(isRecovery){renderAuth();return}
   if(bootPromise)return bootPromise;
   bootPromise=(async()=>{
-    const epoch=++authEpoch;resetSetup();isLoading=true;cloudLoaded=false;state=emptyAccount();renderAuth();
+    cancelPendingAccountDeletion();const epoch=++authEpoch;resetSetup();isLoading=true;cloudLoaded=false;state=emptyAccount();renderAuth();
     try{
       const {data,error}=await accountClient.auth.getUser();if(error||!data.user)throw error||Error('No user');
       if(epoch!==authEpoch)return;currentUser=data.user;state=emptyAccount(currentUser);
@@ -1828,7 +1913,7 @@ async function editAndSave(change,message){
   const before=JSON.parse(JSON.stringify(state));try{change();await persist();render();if(message)toast(message)}catch(error){state=before;render();toast(accountMessage(error))}
 }
 async function refreshAccount(){
-  if(!currentUser||!cloudLoaded||isSaving||setupActive()||overlay||document.activeElement?.matches('input,textarea,select'))return;
+  if(!currentUser||!cloudLoaded||isSaving||pendingAccountDeletion||setupActive()||overlay||document.activeElement?.matches('input,textarea,select'))return;
   try{await loadAccount(true)}catch{toast('Could not refresh your entries. Please try again later.')}
 }
 function initializeAccounts(){
@@ -1951,7 +2036,7 @@ function dailyMotivation(done,total){
 }
 function home(){const tasks=visibleItems().filter(x=>x.kind==='task'&&x.due?.slice(0,10)===today),done=tasks.filter(x=>x.done).length,pct=tasks.length?Math.floor(done*100/tasks.length):0;return `<div class="home-intro"><div class="greeting"><p class="eyebrow">${esc(new Date().toLocaleDateString(locale(),{weekday:'long',day:'numeric',month:'long'}))}</p><h1>${tx('Hello {name}, ready for today?',{name:userName(state.activeUser).split(' ')[0]})}</h1></div><div class="hero"><p class="eyebrow">${tx("✧ Your daily goal")}</p><h2>${tx(dailyMotivation(done,tasks.length))}</h2><p>${tasks.length?esc(countText('{count} task left today.','{count} tasks left today.',tasks.length-done)):tx('No tasks planned for today.')}</p>${tasks.length?`<div class="row"><strong>${pct}%</strong><span style="font-size:10px;opacity:.7">${tx("completed")}</span></div><div class="progress" role="progressbar" aria-label="${tx("Today's task progress")}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>`:''}</div></div><div class="home-sections"><section class="home-calendar"><p class="eyebrow">${tx("Your schedule")}</p><h2>${tx("Calendar")}</h2><p class="subtitle" style="margin:8px 0 16px">${tx("Deadlines, exams, and important university dates.")}</p>${calendar()}</section><section class="section home-today"><div class="row"><h2>${tx("Today")}</h2><button class="text-button" data-action="route" data-route="tasks">${tx("Show all")}</button></div>${sorted(visibleItems().filter(x=>x.kind!=='group'&&x.due?.slice(0,10)===today)).map(card).join('')||`<div class="empty">${tx("No items planned for today.")}</div>`}</section></div>`}
 function overview(kind){const labels={task:['YOUR TO-DOS','Tasks','All your tasks and deadlines at a glance.'],exam:['YOUR EXAMS','Exam overview','Exam details and permitted materials in one place.'],group:['YOUR GROUP WORK','Groups','Your groups, members, and shared tasks.']}[kind];const items=visibleItems().filter(x=>x.kind===kind&&(!filter||(x.title+' '+x.description+' '+moduleFor(x.moduleId).name).toLowerCase().includes(filter.toLowerCase())));return `<p class="eyebrow">${tx(labels[0])}</p><h1>${tx(labels[1])}</h1><p class="subtitle">${tx(labels[2])}</p><div class="row"><span class="count">${kind==='group'?esc(countText('{count} group','{count} groups',items.length)):tx('{count} open',{count:items.filter(x=>!x.done).length})}</span><button class="plus" data-action="add" data-kind="${kind}" aria-label="${tx(kind==='task'?'Add task':kind==='exam'?'Add exam':'Add group')}">${icon('plus')}</button></div><input type="search" class="search" id="list-search" placeholder="${tx(kind==='group'?'Search groups':kind==='exam'?'Search exams':'Search tasks')}" aria-label="${tx("Search")}" value="${esc(filter)}"><div id="item-list" class="entries-grid">${sorted(items).map(card).join('')||`<div class="empty">${tx(kind==='group'?'No groups found. Use + to create one.':kind==='exam'?'No exams found. Use + to create one.':'No tasks found. Use + to create one.')}</div>`}</div>`}
-function profile(){if(profileTab==='modules')return moduleSettings();if(profileTab==='appearance')return appearance();return `<p class="eyebrow">${tx("Your account")}</p><h1>${tx("Profile & reminders")}</h1><p class="subtitle">${tx("Personalize how StudyFlow BFH supports you.")}</p>${languagePicker('language-profile')}${!storageOk?`<div class="notice">${tx("Your last change could not be saved online. Reload the page to see the saved version, then try again.")}</div>`:''}<div class="panel"><h2>${esc(state.profile.name)}</h2><p class="subtitle" style="margin:6px 0 12px">${esc(state.profile.degree)} · ${tx(state.profile.studyMode)} · ${tx(state.profile.semesterTerm)} ${esc(state.profile.semesterYear)}</p><button class="setting" data-action="profile-edit"><span><strong>${tx("Your profile")}</strong><small>${tx("Name, degree program, study mode, and semester")}</small></span>${icon('right')}</button><button class="setting" data-action="profile-tab" data-tab="modules"><span><strong>${tx("Studies & modules")}</strong><small>${tx('{modules} · names and colors',{modules:countText('{count} module','{count} modules',state.modules.length)})}</small></span>${icon('right')}</button><button class="setting" data-action="profile-tab" data-tab="appearance"><span><strong>${tx("Appearance")}</strong><small>${tx(state.theme)}${state.mono?' · '+tx('Monochrome'):''}</small></span>${icon('right')}</button></div><p class="help">${tx('Signed in as {email}',{email:currentUser.email})}</p><button class="action secondary" data-action="sign-out">${tx("Sign out")}</button><p class="help" style="margin-top:18px">${tx("Your entries are saved to your account. Reminders appear here while StudyFlow BFH is open.")}</p>`}
+function profile(){if(profileTab==='modules')return moduleSettings();if(profileTab==='appearance')return appearance();return `<p class="eyebrow">${tx("Your account")}</p><h1>${tx("Profile & reminders")}</h1><p class="subtitle">${tx("Personalize how StudyFlow BFH supports you.")}</p>${languagePicker('language-profile')}${!storageOk?`<div class="notice">${tx("Your last change could not be saved online. Reload the page to see the saved version, then try again.")}</div>`:''}<div class="panel"><h2>${esc(state.profile.name)}</h2><p class="subtitle" style="margin:6px 0 12px">${esc(state.profile.degree)} · ${tx(state.profile.studyMode)} · ${tx(state.profile.semesterTerm)} ${esc(state.profile.semesterYear)}</p><button class="setting" data-action="profile-edit"><span><strong>${tx("Your profile")}</strong><small>${tx("Name, degree program, study mode, and semester")}</small></span>${icon('right')}</button><button class="setting" data-action="profile-tab" data-tab="modules"><span><strong>${tx("Studies & modules")}</strong><small>${tx('{modules} · names and colors',{modules:countText('{count} module','{count} modules',state.modules.length)})}</small></span>${icon('right')}</button><button class="setting" data-action="profile-tab" data-tab="appearance"><span><strong>${tx("Appearance")}</strong><small>${tx(state.theme)}${state.mono?' · '+tx('Monochrome'):''}</small></span>${icon('right')}</button></div><p class="help">${tx('Signed in as {email}',{email:currentUser.email})}</p><button class="action secondary" data-action="sign-out">${tx("Sign out")}</button><button class="action danger" data-action="delete-account-open">${tx("Delete account")}</button><p class="help" style="margin-top:18px">${tx("Your entries are saved to your account. Reminders appear here while StudyFlow BFH is open.")}</p>`}
 function moduleSettings(){return `<button class="text-button" data-action="profile-tab" data-tab="">${tx("‹ Back to profile")}</button><h1 style="margin-top:18px">${tx("Studies & modules")}</h1><p class="subtitle">${tx("Module names and colors apply to all your entries.")}</p><div class="panel">${state.modules.map(m=>`<div class="module-row" data-module="${esc(m.id)}"><input type="color" aria-label="${tx('Color for {name}',{name:m.name})}" data-module-color="${esc(m.id)}" value="${esc(m.color)}"><input type="text" aria-label="${tx("Module name")}" data-module-name="${esc(m.id)}" value="${esc(m.name)}" maxlength="80"><input type="text" class="code" aria-label="${tx("Module code")}" data-module-code="${esc(m.id)}" value="${esc(m.code)}" maxlength="10"><button data-action="remove-module" data-id="${esc(m.id)}" aria-label="${tx('Remove {name}',{name:m.name})}">${icon('close')}</button></div>`).join('')}<button class="action secondary" data-action="add-module">${tx("+ Add module")}</button></div><button class="action" data-action="save-modules">${tx("Save modules")}</button>`}
 function appearance(){return `<button class="text-button" data-action="profile-tab" data-tab="">${tx("‹ Back to profile")}</button><h1 style="margin-top:18px">${tx("Appearance")}</h1><p class="subtitle">${tx("Choose colors that match the way you work.")}</p><div class="panel"><button class="setting" data-action="mono" aria-pressed="${state.mono}"><span><strong>${tx("Monochrome mode")}</strong><small>${tx("Reduce colors and distractions")}</small></span><span class="switch ${state.mono?'on':''}"><span></span></span></button><div class="themes" style="margin-top:18px">${Object.entries(palette).map(([name,p])=>`<button class="theme ${name===state.theme?'selected':''}" data-action="theme" data-theme="${name}" aria-pressed="${name===state.theme}"><i class="swatch" style="background:linear-gradient(90deg,${p[0]} 50%,${p[1]} 50%)"></i>${tx(name)}${name===state.theme?' ✓':''}</button>`).join('')}</div></div>`}
 function render(){syncDocumentLanguage();if(!currentUser||!cloudLoaded||isRecovery){renderAuth();return}if(setupActive()){renderSetup();return}const scroll=document.querySelector('.content')?.scrollTop||0;setLayout('app');applyTheme();app.innerHTML=`${brandHeader()}<main class="content view-${esc(route)}" id="main" tabindex="-1">${route==='home'?home():route==='tasks'?overview('task'):route==='exams'?overview('exam'):route==='groups'?overview('group'):profile()}</main>${nav()}`;document.querySelector('.content').scrollTop=scroll;if(overlay)renderOverlay();checkReminders()}
@@ -2066,8 +2151,59 @@ function formMarkup(item){
   return `<div class="sheet-header"><h2>${esc(heading)}</h2><button class="close" data-action="close" aria-label="${tx('Close form')}">${icon('close')}</button></div><form id="entry-form" novalidate><input type="hidden" name="kind" value="${kind}"><input type="hidden" name="entryId" value="${esc(item.id||'')}">${input(kind==='task'?'Task title (optional)':kind==='group'?'Group name':'Exam title','title',item.title||'','text',`maxlength="140" placeholder="${tx('Title, or leave blank and describe below')}"`)}${textarea('Description','description',item.description||'',kind==='task'?'What is this task about? Write your own description.':'What is this about?')}${kind==='task'?taskGroupFields(item):''}${moduleField}${schedule}${kind==='task'?field('Priority',`<select name="priority" aria-label="${tx('Priority')}">${selectOptions(['High','Normal','Low'].map(x=>[x,x]),item.priority||'Normal')}</select>`):''}${kind==='group'?memberPicker(item):''}${kind==='exam'?input('Location','location',item.location||'','text',`placeholder="${tx('Room or meeting link')}"`):''}${kind==='exam'?`<div class="two-columns">${input('Duration (minutes)','duration',item.duration||90,'number','min="1" max="600" required')}${field('Exam type',`<select name="examType">${selectOptions(['On computer','On paper','Oral','Other'].map(x=>[x,x]),item.examType||'On computer')}</select>`)}</div>${textarea('Permitted materials','materials',item.materials||'','Open book, cheat-sheet, calculator, platform…')}`:''}<p class="form-error notice" role="alert" hidden></p><button class="action" type="button" data-action="save-form">${tx(item.id?'Save changes':kind==='group'?'Create group':kind==='exam'?'Create exam':'Create task')}</button><button class="action secondary" type="button" data-action="close">${tx('Cancel')}</button></form>`;
 }
 function detailMarkup(item){const m=entryModule(item);return `<div class="sheet-header"><h2>${tx(item.kind==='group'?'Group details':'Entry details')}</h2><button class="close" data-action="close" aria-label="${tx("Close details")}">${icon('close')}</button></div><span class="module-tag" style="--module:${esc(color(m))}"><i class="dot"></i>${esc(m.name)}</span><h1>${esc(item.title)}</h1>${item.description?`<p class="multiline">${esc(item.description)}</p>`:''}${item.kind==='group'?'':`<p class="detail-label">${tx(item.kind==='task'?'Due date':'Date & time')}</p><p>${esc(dateText(item.due))}</p><p class="detail-label">${tx("Reminder")}</p><p>${esc(reminderText(item))}</p>`}${item.kind!=='group'&&item.priority?`<p class="detail-label">${tx("Priority")}</p><p>${tx(item.priority)}</p>`:''}${item.kind==='group'?memberStatus(item)+groupTaskList(item):''}${item.kind==='task'&&groupFor(item)?`<p class="detail-label">${tx("Group work")}</p><button class="text-button" data-action="detail" data-id="${esc(groupFor(item).id)}">${esc(groupFor(item).title)} · ${esc(countText('{count} member','{count} members',groupFor(item).memberIds.length+1))}</button>`:''}${item.location?`<p class="detail-label">${tx("Location")}</p><p class="multiline">${esc(item.location)}</p>`:''}${item.duration?`<p class="detail-label">${tx("Duration & type")}</p><p>${tx('{count} minutes',{count:item.duration})} · ${tx(item.examType)}</p>`:''}${item.materials?`<p class="detail-label">${tx("Permitted materials")}</p><p class="multiline">${esc(item.materials)}</p>`:''}${canManage(item)?`<button class="action" data-action="edit" data-id="${esc(item.id)}">${tx("Edit details")}</button>`:`<p class="help">${tx('Shared entry · changes by {name} update your calendar automatically.',{name:userName(item.ownerId)})}</p>`}${item.kind==='task'&&canManage(item)?`<button class="action secondary" data-action="toggle" data-id="${esc(item.id)}">${tx(item.done?'Reopen':'Mark completed')}</button>`:''}${canManage(item)?`<button class="action danger" data-action="delete-ask" data-id="${esc(item.id)}">${tx("Delete entry")}</button>`:''}`}
-function renderOverlay(){document.querySelector('.overlay')?.remove();if(!overlay)return;let html='';if(overlay.type==='form')html=formMarkup(overlay.item);else if(overlay.type==='member')html=memberProfile(overlay.memberId,overlay.groupId);else if(overlay.type==='detail'){const item=state.items.find(x=>x.id===overlay.id);if(!item){overlay=null;return}html=detailMarkup(item)}else if(overlay.type==='delete'){const item=state.items.find(x=>x.id===overlay.id);html=`<div class="sheet-header"><h2>${tx("Delete entry?")}</h2><button class="close" data-action="close" aria-label="${tx("Cancel")}">${icon('close')}</button></div><p>${tx('Delete “{title}”?',{title:item?.title})}</p><button class="action" data-action="delete" data-id="${esc(overlay.id)}">${tx("Delete entry")}</button><button class="action secondary" data-action="detail" data-id="${esc(overlay.id)}">${tx("Keep entry")}</button>`}else if(overlay.type==='day'){const list=visibleItems().filter(x=>x.kind!=='group'&&x.due?.slice(0,10)===overlay.date);html=`<div class="sheet-header"><h2>${esc(new Date(overlay.date+'T12:00').toLocaleDateString(locale(),{day:'numeric',month:'long',year:'numeric'}))}</h2><button class="close" data-action="close" aria-label="${tx("Close day")}">${icon('close')}</button></div>${sorted(list).map(card).join('')||`<div class="empty">${tx("No scheduled entries.")}</div>`}<button class="action" data-action="add" data-kind="task" data-date="${esc(overlay.date)}">${tx("+ Add task for this day")}</button>`}else if(overlay.type==='profile'){html=`<div class="sheet-header"><h2>${tx("Your profile")}</h2><button class="close" data-action="close" aria-label="${tx("Close")}">${icon('close')}</button></div><form id="profile-form" novalidate>${input('Name','name',state.profile.name,'text','required')}${input('Degree program','degree',state.profile.degree,'text','required maxlength="120"')}${field('Study mode',`<select name="studyMode" required>${selectOptions([['Full-time','Full-time'],['Part-time','Part-time']],state.profile.studyMode)}</select>`)}<div class="two-columns">${field('Current semester',`<select name="semesterTerm" required>${selectOptions([['Spring semester','Spring semester'],['Fall semester','Fall semester']],state.profile.semesterTerm)}</select>`)}${field('Year',`<select name="semesterYear" required>${profileOptions(Array.from({length:13},(_,i)=>String(new Date().getFullYear()-5+i)),state.profile.semesterYear)}</select>`)}</div><p class="form-error notice" role="alert" hidden></p><button class="action" type="button" data-action="save-form">${tx("Save profile")}</button></form>`}const backdrop=document.createElement('div');backdrop.className='overlay';backdrop.innerHTML=`<section class="sheet" role="dialog" aria-modal="true" aria-label="${tx(overlay.type==='form'?'Entry form':'Details')}">${html}</section>`;backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeOverlay()});app.appendChild(backdrop);syncTaskGroup();const first=backdrop.querySelector('input:not([type=hidden]),textarea,button');setTimeout(()=>first?.focus({preventScroll:true}),0)}
-function closeOverlay(){overlay=null;document.querySelector('.overlay')?.remove()}
+function accountDeletionMarkup(){
+  return `<div class="sheet-header"><h2>${tx('Delete your account?')}</h2><button class="close" type="button" data-action="close" aria-label="${tx('Cancel')}">${icon('close')}</button></div><p class="notice">${tx('Your account, profile, modules, own entries and groups you created will be permanently deleted. This cannot be undone.')}</p><p class="help">${tx('Other members’ tasks in your groups will become their personal tasks. You will leave groups created by others.')}</p><form id="delete-account-form" novalidate><fieldset class="account-delete-fields">${input('Confirm your email','confirmationEmail','','email',`required autocomplete="email" maxlength="254" placeholder="${esc(currentUser.email)}"`)}${input('Current password','confirmationPassword','','password','required autocomplete="current-password" maxlength="72"')}<p class="form-error notice" role="alert" hidden></p><button class="action account-delete-confirm" type="submit">${tx('Delete my account permanently')}</button><button class="action secondary" type="button" data-action="close">${tx('Keep my account')}</button></fieldset></form>`;
+}
+function cancelPendingAccountDeletion(){
+  if(pendingAccountDeletion){pendingAccountDeletion=null;authBusy=false}
+}
+function accountDeletionError(error){
+  if(error?.code==='invalid_credentials')return 'Your password is incorrect. Your account was not deleted.';
+  if(error?.message?.includes('STUDYFLOW_RECENT_SIGN_IN_REQUIRED'))return 'Please enter your password again to confirm the deletion.';
+  if(error?.message?.includes('STUDYFLOW_ACCOUNT_CONFIRMATION_REQUIRED'))return 'Type your account email address to confirm.';
+  if(error?.message?.includes('STUDYFLOW_ACCOUNT_HAS_FILES'))return 'Your account still owns uploaded files. Please contact the administrator before deleting it.';
+  if(error?.message?.includes('STUDYFLOW_ACCOUNT_ACCESS_DENIED'))return 'Sign out and sign in again before deleting your account.';
+  return accountMessage(error);
+}
+async function submitAccountDeletion(form){
+  if(!currentUser||!cloudLoaded||isRecovery||setupActive()||isSaving||pendingAccountDeletion)return false;
+  const emailControl=form.elements.namedItem('confirmationEmail'),passwordControl=form.elements.namedItem('confirmationPassword');
+  const email=currentUser.email,confirmation=String(emailControl?.value||'').trim().toLowerCase();
+  const password=String(passwordControl?.value||'');
+  if(confirmation!==email.toLowerCase())return formError(form,'Type your account email address to confirm.','confirmationEmail');
+  if(!password)return formError(form,'Enter your current password to continue.','confirmationPassword');
+  const attempt={epoch:authEpoch,userId:currentUser.id,revision:cloudRevision};
+  const stillCurrent=()=>attempt.epoch===authEpoch&&currentUser?.id===attempt.userId;
+  const fields=form.querySelector('fieldset'),submit=form.querySelector('[type="submit"]');
+  pendingAccountDeletion=attempt;authBusy=true;if(fields)fields.disabled=true;if(submit)submit.textContent=t('Deleting your account…');
+  passwordControl.value='';
+  const errorBox=form.querySelector('.form-error');if(errorBox)errorBox.hidden=true;
+  try{
+    const {data,error}=await accountClient.auth.signInWithPassword({email,password});
+    if(!stillCurrent())return false;
+    if(error)throw error;
+    if(data?.session?.user?.id!==attempt.userId)throw Error('STUDYFLOW_ACCOUNT_ACCESS_DENIED');
+    const result=await accountClient.rpc('studyflow_delete_account',{confirmation_email:confirmation,expected_revision:attempt.revision});
+    if(!stillCurrent())return false;
+    if(result.error)throw result.error;
+    if(result.data?.deleted!==true)throw Error('Account deletion did not complete');
+    let signOutFailed=false;
+    try{const logout=await accountClient.auth.signOut({scope:'local'});signOutFailed=!!logout?.error}catch{signOutFailed=true}
+    if(currentUser&&currentUser.id!==attempt.userId)return true;
+    // The server has already removed every session. Also discard the local token if logout was offline.
+    if(signOutFailed){try{globalThis.localStorage?.removeItem(ACCOUNT_STORAGE_KEY)}catch{}}
+    clearAccount('Your account has been deleted.');
+    return true;
+  }catch(error){
+    if(stillCurrent())return formError(form,accountDeletionError(error));
+    return false;
+  }finally{
+    if(pendingAccountDeletion===attempt){pendingAccountDeletion=null;authBusy=false;if(fields)fields.disabled=false;if(submit)submit.textContent=t('Delete my account permanently')}
+  }
+}
+
+function renderOverlay(){document.querySelector('.overlay')?.remove();if(!overlay)return;let html='';if(overlay.type==='form')html=formMarkup(overlay.item);else if(overlay.type==='delete-account')html=accountDeletionMarkup();else if(overlay.type==='member')html=memberProfile(overlay.memberId,overlay.groupId);else if(overlay.type==='detail'){const item=state.items.find(x=>x.id===overlay.id);if(!item){overlay=null;return}html=detailMarkup(item)}else if(overlay.type==='delete'){const item=state.items.find(x=>x.id===overlay.id);html=`<div class="sheet-header"><h2>${tx("Delete entry?")}</h2><button class="close" data-action="close" aria-label="${tx("Cancel")}">${icon('close')}</button></div><p>${tx('Delete “{title}”?',{title:item?.title})}</p><button class="action" data-action="delete" data-id="${esc(overlay.id)}">${tx("Delete entry")}</button><button class="action secondary" data-action="detail" data-id="${esc(overlay.id)}">${tx("Keep entry")}</button>`}else if(overlay.type==='day'){const list=visibleItems().filter(x=>x.kind!=='group'&&x.due?.slice(0,10)===overlay.date);html=`<div class="sheet-header"><h2>${esc(new Date(overlay.date+'T12:00').toLocaleDateString(locale(),{day:'numeric',month:'long',year:'numeric'}))}</h2><button class="close" data-action="close" aria-label="${tx("Close day")}">${icon('close')}</button></div>${sorted(list).map(card).join('')||`<div class="empty">${tx("No scheduled entries.")}</div>`}<button class="action" data-action="add" data-kind="task" data-date="${esc(overlay.date)}">${tx("+ Add task for this day")}</button>`}else if(overlay.type==='profile'){html=`<div class="sheet-header"><h2>${tx("Your profile")}</h2><button class="close" data-action="close" aria-label="${tx("Close")}">${icon('close')}</button></div><form id="profile-form" novalidate>${input('Name','name',state.profile.name,'text','required')}${input('Degree program','degree',state.profile.degree,'text','required maxlength="120"')}${field('Study mode',`<select name="studyMode" required>${selectOptions([['Full-time','Full-time'],['Part-time','Part-time']],state.profile.studyMode)}</select>`)}<div class="two-columns">${field('Current semester',`<select name="semesterTerm" required>${selectOptions([['Spring semester','Spring semester'],['Fall semester','Fall semester']],state.profile.semesterTerm)}</select>`)}${field('Year',`<select name="semesterYear" required>${profileOptions(Array.from({length:13},(_,i)=>String(new Date().getFullYear()-5+i)),state.profile.semesterYear)}</select>`)}</div><p class="form-error notice" role="alert" hidden></p><button class="action" type="button" data-action="save-form">${tx("Save profile")}</button></form>`}const backdrop=document.createElement('div');backdrop.className='overlay';backdrop.innerHTML=`<section class="sheet" role="dialog" aria-modal="true" aria-label="${tx(overlay.type==='delete-account'?'Delete account':overlay.type==='form'?'Entry form':'Details')}">${html}</section>`;backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeOverlay()});app.appendChild(backdrop);syncTaskGroup();const first=backdrop.querySelector('input:not([type=hidden]),textarea,button');setTimeout(()=>first?.focus({preventScroll:true}),0)}
+function closeOverlay(){if(pendingAccountDeletion)return;overlay=null;document.querySelector('.overlay')?.remove()}
 function newEntry(kind,date){
   if(kind!=='group'&&!state.modules.length){toast('Add a module in Profile first.');route='profile';profileTab='modules';render();return}
   const item=kind==='group'?unscheduledGroup({kind,moduleId:state.modules[0]?.id||''}):{kind,moduleId:state.modules[0].id,due:(date||today)+'T18:00',reminder:'30'};
@@ -2083,8 +2219,10 @@ app.addEventListener('click',async e=>{
    else if(needsSetup()&&setupStep===2&&['setup-add-module','setup-remove-module','setup-back'].includes(a))changeSetupModules(a,id,document.getElementById('setup-form'));
    return;
  }
+ if(pendingAccountDeletion){toast('Deleting your account…');return}
  if(isSaving){toast('Saving your changes…');return}
- if(a==='member-profile'){overlay={type:'member',memberId:b.dataset.member,groupId:b.dataset.group};renderOverlay()}
+ if(a==='delete-account-open'){overlay={type:'delete-account'};renderOverlay()}
+ else if(a==='member-profile'){overlay={type:'member',memberId:b.dataset.member,groupId:b.dataset.group};renderOverlay()}
  else if(a==='save-form')await saveForm(b.closest('form'));
  else if(a==='route'){if(b.dataset.route==='home')motivationVisit++;route=b.dataset.route;profileTab='';filter='';overlay=null;render();document.querySelector('.content').scrollTop=0}
  else if(a==='add')newEntry(b.dataset.kind,b.dataset.date);
@@ -2150,7 +2288,7 @@ async function saveForm(form){
   }catch(error){state=before;return formError(form,error.message==='MEMBER_EMAIL_REQUIRED'?'Enter each member’s email address, separated by commas.':accountMessage(error))}
   return formError(form,'This form could not be saved. Please reopen the entry form.');
 }
-app.addEventListener('submit',async e=>{e.preventDefault();if(e.target.getAttribute('id')==='account-form')await submitAccount(e.target);else if(e.target.getAttribute('id')==='setup-form')await submitSetup(e.target);else await saveForm(e.target)});
+app.addEventListener('submit',async e=>{e.preventDefault();if(e.target.getAttribute('id')==='account-form')await submitAccount(e.target);else if(e.target.getAttribute('id')==='setup-form')await submitSetup(e.target);else if(e.target.getAttribute('id')==='delete-account-form')await submitAccountDeletion(e.target);else await saveForm(e.target)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOverlay()});
 const shownReminders=new Set();function checkReminders(){if(!currentUser||!cloudLoaded||setupActive())return;const now=Date.now();for(const item of visibleItems()){if(item.kind==='group'||item.done||item.reminder==='none')continue;const at=new Date(item.due).getTime()-Number(item.reminder)*60000,key=state.activeUser+':'+item.id+':'+item.due+':'+item.reminder;if(now>=at&&now<at+60000&&!shownReminders.has(key)){shownReminders.add(key);toast(t('Reminder: {title} · {date}',{title:item.title,date:dateText(item.due)}))}}}
 setInterval(checkReminders,30000);initializeAccounts();

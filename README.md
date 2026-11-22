@@ -60,6 +60,16 @@ Das Tagesziel auf der Startseite bezieht sich auf Aufgaben mit heutigem Fälligk
 
 Die Motivationssprüche unterscheiden zwischen noch nicht begonnen, ersten Fortschritten, mindestens einem Viertel, mindestens der Hälfte, mindestens drei Vierteln und vollständig erledigt. Für jede Stufe sowie für Tage ohne Aufgaben gibt es drei Texte in Deutsch, Französisch, Italienisch und Englisch. Bei geändertem Erledigungsstand und beim Aufrufen der Startseite wird innerhalb der passenden Stufe gewechselt. Automatische Aktualisierungen, Kalendernavigation, Änderungen der Darstellung und Sprachwechsel behalten denselben Spruch bei. Die Auswahl wird nur im Browser-Arbeitsspeicher gehalten; es werden dafür keine Kontodaten gespeichert oder zusätzliche Dienste aufgerufen.
 
+## Eigenes Konto löschen
+
+Im Profil öffnet **Konto löschen** eine ausdrückliche Bestätigung. Die E-Mail-Adresse muss eingegeben und das aktuelle Passwort erneut bestätigt werden. Das Passwort wird ausschliesslich an Supabase Auth zum erneuten Anmelden gesendet; die Löschfunktion erhält nur die Bestätigungsadresse und den gespeicherten Revisionsstand. Die Datenbank akzeptiert ausschliesslich die aktuell angemeldete Identität mit einer bestehenden, höchstens fünf Minuten alten Sitzung. Es gibt keinen Parameter zur Auswahl einer anderen Benutzer-ID und keinen geheimen Admin-Schlüssel im Browser.
+
+Die Löschung entfernt das Auth-Konto, seine Sitzungen, das Profil mit Modulen und Einstellungen, die eigenen Aufgaben und Prüfungen sowie selbst erstellte Gruppen. Aufgaben anderer Mitglieder in diesen Gruppen bleiben mit Inhalt, Erledigungsstand, Terminen, Erinnerungen und Modulbeschreibung als persönliche Aufgaben erhalten. Mitgliedschaften in Gruppen anderer Konten werden entfernt. Betroffene Konten erhalten eine neue Datenrevision, damit ein älterer Speicherstand keine entfernten Verknüpfungen wiederherstellt. Alle Datenbankänderungen laufen in einer Transaktion; ein Fehler lässt die Daten unverändert.
+
+Nach erfolgreicher Löschung wird die lokale Anmeldung beendet und die Anmeldeseite zeigt die Bestätigung. Bei falschem Passwort, veraltetem Speicherstand oder Netzwerkfehler bleibt ein erneuter Versuch möglich. Kontowechsel während einer Anfrage dürfen das neu angemeldete Konto weder löschen noch dessen Anzeige leeren. Während der Bestätigung kann abgebrochen werden; während der laufenden Löschanfrage sind doppelte Anfragen gesperrt. Alle Texte sind in den vier App-Sprachen vorhanden.
+
+Die Migration `supabase/migrations/20261122185011_studyflow_self_service_account_deletion.sql` enthält den eng begrenzten privaten Datenbankaufruf und den öffentlichen Aufruf mit den nötigen Zugriffsrechten. `scripts/check-account-deletion.sql` prüft die Löschung, abgewiesene Anfragen, den Datenerhalt für andere Mitglieder und den Schutz vor veralteten Speicherständen mit ausschliesslich synthetischen Identitäten innerhalb einer zurückgerollten Transaktion. Dafür sind administrative Datenbankrechte nötig; echte Konten werden nicht verwendet und keine E-Mails versendet.
+
 ## Sprache
 
 Deutsch, Französisch, Italienisch und Englisch sind bereits vor der Anmeldung, während der Einrichtung und später im Profil auswählbar. Beim ersten Besuch wird eine unterstützte Browsersprache verwendet, andernfalls Englisch. Eine lokale Auswahl bleibt auf dem Gerät erhalten; nach der Anmeldung hat die im jeweiligen Konto gespeicherte Sprache Vorrang.
@@ -79,7 +89,7 @@ Alle Übersetzungen sind in der App enthalten. Es wird kein Übersetzungsdienst 
 - Abmelden und mit einem zweiten bestätigten Konto anmelden. Persönliche Aufgaben gehören jeweils zum eigenen Konto.
 - Eine Gruppenarbeit mit der bestätigten Adresse des zweiten Kontos teilen und die geteilten Einträge in beiden Konten prüfen.
 
-Die automatischen Prüfungen decken Anmeldung, Kontowechsel, Einrichtung, die vier Sprachen und Gruppen mit oder ohne Modulzuordnung ab. Sie prüfen auch Speicherfehler, Datumsausgabe und den Erhalt bestehender Einträge, ohne echte E-Mails zu versenden:
+Die automatischen Prüfungen decken Anmeldung, Kontowechsel, Einrichtung, die vier Sprachen, Gruppen mit oder ohne Modulzuordnung sowie Bestätigung und Fehler bei der Kontolöschung ab. Sie prüfen auch Speicherfehler, Datumsausgabe und den Erhalt bestehender Einträge, ohne echte E-Mails zu versenden:
 
 ```sh
 npm run check:auth

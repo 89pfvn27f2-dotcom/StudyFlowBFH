@@ -36,7 +36,7 @@ function fixture({ languages = ['en-GB'], savedLanguage, storageUnavailable = fa
     window: { StudyFlowSupabase: { createClient(url, key, options) { clientOptions = options; return api; } }, addEventListener() {} },
     setInterval() {}, setTimeout(callback) { callback(); return 0; }, clearTimeout() {},
     navigator: { languages, language: languages[0] },
-    localStorage: { getItem(key) { if (storageUnavailable) throw Error('Storage disabled'); return deviceStorage.get(key) || null; }, setItem(key, value) { if (storageUnavailable) throw Error('Storage disabled'); deviceStorage.set(key, value); } },
+    localStorage: { getItem(key) { if (storageUnavailable) throw Error('Storage disabled'); return deviceStorage.get(key) || null; }, setItem(key, value) { if (storageUnavailable) throw Error('Storage disabled'); deviceStorage.set(key, value); }, removeItem(key) { if (storageUnavailable) throw Error('Storage disabled'); deviceStorage.delete(key); } },
     __boots: boots
   });
   vm.runInContext(scripts[1], context);
@@ -798,7 +798,128 @@ await check('legacy dated groups never count as tasks or calendar entries', asyn
   assert.match(home, /, 2 events"/);
 });
 
-console.log('All ' + passed + ' account, setup, language and group checks passed. No network requests or emails were sent.');
+async function deletionFixture(){
+  const f=await groupFixture([], [{id:'kept-until-confirmed',owner_id:'account-a',group_id:null,data:{kind:'task',title:'Saved task',moduleId:'module-one',due:'2026-12-03T18:00',reminder:'none',done:false}}]);
+  f.response={data:{session:{user:{id:'account-a'}}},error:null};
+  f.context.__deleteCalls=[];
+  f.context.__deleteResult={data:{deleted:true},error:null};
+  f.run('accountClient.rpc=async(name,payload)=>{__deleteCalls.push({name,payload});return __deleteResult};');
+  return f;
+}
+function deletionForm(f,overrides={}){
+  let error='';
+  const values={confirmationEmail:'student@example.test',confirmationPassword:'Synthetic-password-123',...overrides};
+  const controls=Object.fromEntries(Object.entries(values).map(([name,value])=>[name,{name,value,setAttribute(){},focus(){},scrollIntoView(){}}]));
+  const elements=Object.values(controls);elements.namedItem=name=>controls[name];
+  const fields={disabled:false},submit={textContent:'Delete my account permanently'};
+  const box={hidden:true,scrollIntoView(){},set textContent(value){error=value}};
+  const form={elements,getAttribute(){return 'delete-account-form'},querySelector(selector){return selector==='fieldset'?fields:selector==='[type="submit"]'?submit:box}};
+  f.context.__deletionForm=form;
+  return {form,fields,submit,controls,get error(){return error}};
+}
+await check('account deletion is explicit, translated and cancellable without requests',async()=>{
+  const f=await deletionFixture();
+  for(const [code,label] of [['de','Mein Konto dauerhaft löschen'],['fr','Supprimer définitivement mon compte'],['it','Elimina definitivamente il mio account'],['en','Delete my account permanently']]){
+    f.run('language='+JSON.stringify(code));
+    assert.match(f.run('profile()'),/data-action="delete-account-open"/);
+    const markup=f.run('accountDeletionMarkup()');
+    assert.ok(markup.includes(label));
+    assert.match(markup,/name="confirmationEmail"/);assert.match(markup,/autocomplete="current-password"/);
+    assert.match(markup,/type="submit"/);
+    assert.doesNotMatch(markup,/value="Synthetic-password/);
+  }
+  f.context.document.createElement=()=>({innerHTML:'',className:'',addEventListener(){},querySelector(){return null}});
+  await setupClick(f,'delete-account-open');assert.equal(f.run('overlay.type'),'delete-account');
+  await setupClick(f,'close');assert.equal(f.run('overlay'),null);
+  assert.equal(f.requests.length,0);assert.equal(f.context.__deleteCalls.length,0);
+});
+await check('account deletion requires the current email and a password before any request',async()=>{
+  const f=await deletionFixture();const before=f.run('JSON.stringify(state)');
+  for(const values of [{confirmationEmail:'someone-else@example.test'},{confirmationPassword:''}]){
+    const form=deletionForm(f,values);assert.equal(await f.run('submitAccountDeletion(__deletionForm)'),false);assert.ok(form.error);
+  }
+  assert.equal(f.requests.length,0);assert.equal(f.context.__deleteCalls.length,0);assert.equal(f.run('JSON.stringify(state)'),before);
+});
+await check('wrong password blocks deletion and releases the confirmation form',async()=>{
+  const f=await deletionFixture();const form=deletionForm(f);const before=f.run('JSON.stringify(state)');
+  f.response={data:{session:null},error:{code:'invalid_credentials'}};
+  assert.equal(await f.run('submitAccountDeletion(__deletionForm)'),false);
+  assert.match(form.error,/password is incorrect/);assert.equal(form.fields.disabled,false);
+  assert.equal(form.controls.confirmationPassword.value,'');assert.equal(f.context.__deleteCalls.length,0);
+  assert.equal(f.run('JSON.stringify(state)'),before);assert.equal(f.run('authBusy'),false);
+});
+await check('server failures preserve account data and give a retry path',async()=>{
+  const f=await deletionFixture();const before=f.run('JSON.stringify(state)');
+  for(const [result,message] of [
+    [{error:{message:'STUDYFLOW_RECENT_SIGN_IN_REQUIRED'}},/password again/],
+    [{error:{message:'STUDYFLOW_REVISION_CONFLICT'}},/reload the page/],
+    [{data:null,error:null},/could not be completed/]
+  ]){
+    f.context.__deleteResult=result;const form=deletionForm(f);
+    assert.equal(await f.run('submitAccountDeletion(__deletionForm)'),false);assert.match(form.error,message);
+    assert.equal(form.fields.disabled,false);assert.equal(f.run('JSON.stringify(state)'),before);
+  }
+  assert.equal(f.requests.some(r=>r.method==='signout'),false);
+});
+await check('confirmed deletion signs in freshly, sends no password to SQL and returns to sign-in',async()=>{
+  const f=await deletionFixture();deletionForm(f,{confirmationEmail:'  STUDENT@EXAMPLE.TEST  '});
+  f.run('const originalDeletionSignout=accountClient.auth.signOut;accountClient.auth.signOut=async options=>{globalThis.__logoutOptions=options;return originalDeletionSignout()};');
+  await f.events.get('submit')({preventDefault(){},target:f.context.__deletionForm});
+  assert.equal(f.requests[0].method,'login');assert.equal(f.requests[0].payload.email,'student@example.test');
+  assert.equal(f.context.__deleteCalls.length,1);const call=f.context.__deleteCalls[0];
+  assert.equal(call.name,'studyflow_delete_account');
+  assert.deepEqual(JSON.parse(JSON.stringify(call.payload)),{confirmation_email:'student@example.test',expected_revision:7});
+  assert.equal(f.context.__logoutOptions.scope,'local');assert.equal(f.run('currentUser'),null);
+  assert.equal(f.run('state.items.length'),0);assert.equal(f.run('cloudLoaded'),false);
+  assert.match(f.app.innerHTML,/Your account has been deleted/);assert.equal(f.run('authBusy'),false);
+  assert.equal([...f.deviceStorage.values()].some(value=>value.includes('Synthetic-password')),false);
+  f.run('clearAccount()');assert.match(f.app.innerHTML,/Your account has been deleted/,'A delayed SIGNED_OUT callback must keep the deletion notice.');
+});
+await check('pending deletion prevents duplicate requests and closing the confirmation',async()=>{
+  const f=await deletionFixture();const form=deletionForm(f);
+  f.run("overlay={type:'delete-account'};accountClient.auth.signInWithPassword=()=>new Promise(resolve=>{globalThis.__finishPassword=resolve});");
+  const pending=f.run('submitAccountDeletion(__deletionForm)');
+  assert.equal(form.fields.disabled,true);assert.match(form.submit.textContent,/Deleting/);
+  assert.equal(await f.run('submitAccountDeletion(__deletionForm)'),false);
+  f.run('closeOverlay()');assert.equal(f.run('overlay.type'),'delete-account');
+  f.context.__finishPassword({data:{session:{user:{id:'account-a'}}},error:null});
+  assert.equal(await pending,true);assert.equal(f.context.__deleteCalls.length,1);
+});
+await check('switching accounts during password confirmation cannot delete the new account',async()=>{
+  const f=await deletionFixture();deletionForm(f);
+  f.run('accountClient.auth.signInWithPassword=()=>new Promise(resolve=>{globalThis.__finishPassword=resolve});');
+  const pending=f.run('submitAccountDeletion(__deletionForm)');
+  f.run("cancelPendingAccountDeletion();authEpoch++;currentUser={id:'account-b',email:'other@example.test'};state=emptyAccount(currentUser);state.items=[{id:'new-account-task'}];");
+  f.context.__finishPassword({data:{session:{user:{id:'account-a'}}},error:null});
+  assert.equal(await pending,false);assert.equal(f.context.__deleteCalls.length,0);
+  assert.equal(f.run('currentUser.id'),'account-b');assert.equal(f.run('state.items[0].id'),'new-account-task');
+});
+await check('a deletion response for a previous account does not sign out or clear a new account',async()=>{
+  const f=await deletionFixture();deletionForm(f);
+  f.run('accountClient.rpc=()=>new Promise(resolve=>{globalThis.__finishDelete=resolve});');
+  const pending=f.run('submitAccountDeletion(__deletionForm)');await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(typeof f.context.__finishDelete,'function');
+  f.run("cancelPendingAccountDeletion();authEpoch++;currentUser={id:'account-b',email:'other@example.test'};state=emptyAccount(currentUser);state.items=[{id:'new-account-task'}];");
+  f.context.__finishDelete({data:{deleted:true},error:null});
+  assert.equal(await pending,false);assert.equal(f.requests.some(r=>r.method==='signout'),false);
+  assert.equal(f.run('state.items[0].id'),'new-account-task');
+});
+await check('successful server deletion discards a local token even if logout is offline',async()=>{
+  const f=await deletionFixture();deletionForm(f);
+  f.deviceStorage.set('studyflow-account-rvzthkabxdxaftbwhvvz','synthetic-session');
+  f.run("accountClient.auth.signOut=async()=>({error:{message:'Failed to fetch'}});");
+  assert.equal(await f.run('submitAccountDeletion(__deletionForm)'),true);
+  assert.equal(f.deviceStorage.has('studyflow-account-rvzthkabxdxaftbwhvvz'),false);
+  assert.equal(f.deviceStorage.get('studyflow-interface-language'),'en');assert.equal(f.run('currentUser'),null);
+});
+await check('preserved tasks load as personal entries with their module and completion intact',async()=>{
+  const f=await groupFixture([], [{id:'preserved-task',owner_id:'account-a',group_id:null,data:{kind:'task',title:'Preserved content',description:'Saved description',workType:'individual',groupId:'',moduleId:'former-group-module',moduleSnapshot:{id:'former-group-module',name:'Preserved module',code:'PRES',color:'#245b87'},done:true,due:'2026-12-03T18:00',reminder:'60'}}]);
+  const card=f.run("overview('task')");assert.match(card,/Preserved content/);assert.match(card,/Preserved module/);
+  assert.match(card,/card completed/);assert.equal(f.run("state.items[0].workType"),'individual');
+  assert.equal(f.run("state.items[0].reminder"),'60');assert.equal(f.run("state.items[0].description"),'Saved description');
+});
+
+console.log('All ' + passed + ' account, setup, language, group and deletion checks passed. No network requests or emails were sent.');
 
 
 
