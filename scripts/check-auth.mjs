@@ -128,5 +128,52 @@ await check('signout clears the in-memory personal entries', async () => {
   assert.match(f.app.innerHTML, /Welcome back/);
 });
 
-console.log('All ' + passed + ' authentication checks passed. No network requests or emails were sent.');
+function savedAccountFixture(f, settings = null, items = []) {
+  f.context.__accountUser = { id: 'account-a', email: 'student@example.test', user_metadata: { name: 'New student' } };
+  f.context.__accountTables = { studyflow_settings: settings, studyflow_groups: [], studyflow_group_members: [], studyflow_items: items };
+  f.context.__savedAccounts = [];
+  f.run([
+    'currentUser = __accountUser;',
+    'accountClient.from = table => {',
+    '  const result = { data: __accountTables[table], error: null };',
+    '  return { select() { return this; }, eq() { return this; }, async maybeSingle() { return result; }, then(resolve, reject) { return Promise.resolve(result).then(resolve, reject); } };',
+    '};',
+    'accountClient.rpc = async (name, payload) => { __savedAccounts.push({ name, payload }); return { data: 1, error: null }; };'
+  ].join('\n'));
+}
+
+await check('first account load saves an empty module list', async () => {
+  const f = fixture();
+  savedAccountFixture(f);
+  await f.run('loadAccount()');
+  assert.equal(f.run('state.modules.length'), 0);
+  assert.equal(f.run('state.items.length'), 0);
+  assert.equal(f.run('state.profile.name'), 'New student');
+  assert.equal(f.context.__savedAccounts.length, 1);
+  const saved = f.context.__savedAccounts[0];
+  assert.equal(saved.name, 'studyflow_save');
+  assert.equal(saved.payload.expected_revision, 0);
+  assert.equal(saved.payload.settings.modules.length, 0);
+  assert.equal(saved.payload.groups_data.length, 0);
+  assert.equal(saved.payload.items_data.length, 0);
+});
+
+await check('existing modules and task references survive account loading', async () => {
+  const f = fixture();
+  const module = { id: 'own-module', name: 'My own course', code: 'OWN', color: '#245b87' };
+  savedAccountFixture(f, { profile: { name: 'Saved student' }, modules: [module], theme: 'Blue', mono: false, revision: 4 }, [
+    { id: 'saved-task', owner_id: 'account-a', group_id: null, data: { kind: 'task', title: 'Keep my task', moduleId: 'own-module' } }
+  ]);
+  await f.run('loadAccount()');
+  assert.equal(f.run('state.modules.length'), 1);
+  assert.equal(f.run('state.modules[0].id'), 'own-module');
+  assert.equal(f.run('state.modules[0].name'), 'My own course');
+  assert.equal(f.run('state.items[0].moduleId'), 'own-module');
+  assert.equal(f.run('state.profile.name'), 'Saved student');
+  assert.equal(f.run('cloudRevision'), 4);
+  assert.equal(f.context.__savedAccounts.length, 0, 'Loading an existing account must not replace its saved modules.');
+});
+
+console.log('All ' + passed + ' account checks passed. No network requests or emails were sent.');
+
 

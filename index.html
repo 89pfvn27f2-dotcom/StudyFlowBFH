@@ -48,7 +48,7 @@ let authEpoch=0,bootPromise=null;
 
 function emptyAccount(user=null){
   const year=String(new Date().getFullYear()),term=new Date().getMonth()<7?'Spring semester':'Fall semester';
-  return {version:2,profile:{name:user?.user_metadata?.name||user?.email?.split('@')[0]||'',degree:'BSc Business Administration',studyMode:'Full-time',semesterTerm:term,semesterYear:year,semester:term+' '+year},theme:'Green',mono:false,modules:seed.modules.map(m=>({...m,id:newId()})),items:[],people:[],activeUser:user?.id||null};
+  return {version:2,profile:{name:user?.user_metadata?.name||user?.email?.split('@')[0]||'',degree:'BSc Business Administration',studyMode:'Full-time',semesterTerm:term,semesterYear:year,semester:term+' '+year},theme:'Green',mono:false,modules:[],items:[],people:[],activeUser:user?.id||null};
 }
 function accountMessage(error){
   if(error?.code==='user_already_exists')return 'An account with this email already exists. Choose "Back to sign in" and use your existing password.';
@@ -167,8 +167,7 @@ const paths={home:'M3 10 12 3l9 7M5 9v12h14V9M9 21v-7h6v7',tasks:'M9 6h12M9 12h1
 const icon=n=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[n]||paths.tasks}"/></svg>`;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const localDate=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
-const today=localDate(new Date());const future=n=>{let d=new Date();d.setDate(d.getDate()+n);return localDate(d)};
-const seed={version:1,profile:{name:'Lea Müller',degree:'BSc Agricultural Science',semester:'Spring semester 2025',studyMode:'Full-time',semesterTerm:'Spring semester',semesterYear:'2025'},theme:'Green',mono:false,modules:[{id:'m1',name:'Statistik II',code:'ST',color:'#6b8fc7'},{id:'m2',name:'Projektmanagement',code:'PM',color:'#a27aca'},{id:'m3',name:'Medien & Gesellschaft',code:'MG',color:'#e5a35c'}],items:[{id:'demo-task',kind:'task',title:'Summarize chapter 4',description:'Read chapter 4 and write a summary of the key statistical methods.',moduleId:'m1',due:today+'T18:00',reminder:'30',notes:'Include one worked example for each method.',priority:'Normal',done:false},{id:'demo-group',kind:'group',title:'Interim presentation',description:'Review the slides and agree on the speaking parts.',moduleId:'m2',due:today+'T16:30',reminder:'30',notes:'Bring the latest presentation.',members:'Lea, Anna, Noah',location:'Room 2.14',done:false},{id:'demo-exam',kind:'exam',title:'Statistics II',description:'Final written assessment.',moduleId:'m1',due:future(6)+'T14:00',reminder:'1440',notes:'',duration:'90',location:'H207 seminar room, 2nd floor',examType:'On computer',materials:'1 × A4 cheat-sheet, double-sided. Study USB drive required.',done:false}]};
+const today=localDate(new Date());
 let storageOk=true;let state=emptyAccount();
 function userName(id){return id===currentUser?.id||id===currentUser?.email?state.profile.name:state.people.find(p=>p.id===id)?.name||'Group member'}
 function personIds(names){const list=[...new Set(names.split(/[,;\n]/).map(n=>n.trim()).filter(Boolean))];return list.map(raw=>{const match=raw.match(/^(.*?)\s*<([^<>]+)>$/),email=(match?match[2]:raw).trim().toLowerCase(),name=match?match[1].trim():email;if(email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw Error('MEMBER_EMAIL_REQUIRED');if(email===currentUser.email.toLowerCase())return null;let p=state.people.find(p=>p.id===email);if(!p){p={id:email,email,name:name.slice(0,100)};state.people.push(p)}else if(match)p.name=name.slice(0,100);return email}).filter((id,i,ids)=>id&&ids.indexOf(id)===i)}
@@ -249,3 +248,4 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOverlay()});
 const shownReminders=new Set();function checkReminders(){if(!currentUser||!cloudLoaded)return;const now=Date.now();for(const item of visibleItems()){if(item.done||item.reminder==='none')continue;const at=new Date(item.due).getTime()-Number(item.reminder)*60000,key=state.activeUser+':'+item.id+':'+item.due+':'+item.reminder;if(now>=at&&now<at+60000&&!shownReminders.has(key)){shownReminders.add(key);toast('Reminder: '+item.title+' · '+dateText(item.due))}}}
 setInterval(checkReminders,30000);initializeAccounts();
 </script></body></html>
+
