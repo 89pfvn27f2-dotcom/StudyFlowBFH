@@ -34,6 +34,12 @@ Die Eingaben werden erst gemeinsam am Ende gespeichert. Bestehende Modul-IDs und
 
 Der vollständige Name lautet **StudyFlow BFH**. Das ausgewählte Buchsymbol mit geschwungenem Pfeil erscheint in allen Kopfzeilen und als Browser-Symbol. Die Bilddatei enthält nur das Symbol; der Name daneben bleibt lesbarer HTML-Text. Im Schwarz-Weiss-Modus wird auch das Logo ohne Farbe dargestellt.
 
+## Laptop, Tablet und Smartphone
+
+Die Darstellung passt sich automatisch an die Fensterbreite an. Auf dem Smartphone stehen Inhalte untereinander; die Hauptnavigation bleibt unten. Auf Tablets wird der verfügbare Platz breiter genutzt. Ab 900 Pixeln Fensterbreite wechselt die angemeldete App zu einer seitlichen Navigation und einer breiten Arbeitsfläche. Auf der Startseite stehen Kalender und heutige Einträge nebeneinander; Aufgaben-, Prüfungs- und Gruppenlisten haben zwei Spalten.
+
+Anmeldung und Einrichtung behalten eine gut lesbare Formularbreite. Eintragsformulare und Details öffnen auf grösseren Bildschirmen als mittige Dialoge mit eigener Scrollmöglichkeit. Kleine Fensterhöhen werden berücksichtigt. Funktionen, Reihenfolge der Einträge, gespeicherte Daten, Farbauswahl und Sprachen bleiben erhalten.
+
 ## Sprache
 
 Deutsch, Französisch, Italienisch und Englisch sind bereits vor der Anmeldung, während der Einrichtung und später im Profil auswählbar. Beim ersten Besuch wird eine unterstützte Browsersprache verwendet, andernfalls Englisch. Eine lokale Auswahl bleibt auf dem Gerät erhalten; nach der Anmeldung hat die im jeweiligen Konto gespeicherte Sprache Vorrang.
