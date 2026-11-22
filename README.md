@@ -24,15 +24,22 @@ Unter **Authentication → Email** einen eigenen SMTP-Anbieter oder einen **Send
 
 **Confirm email** aktiviert lassen: Die Zuordnung von Gruppenarbeiten beruht auf bestätigten E-Mail-Adressen.
 
+## Einrichtung beim ersten Start
+
+Alle Konten durchlaufen vor der Nutzung einmal eine Einrichtung. Gespeicherte Angaben und Module werden vorausgefüllt. Name, Studiengang, Studienform, Semester und Jahr sind Pflicht; vor dem Abschluss muss mindestens ein benanntes eigenes Modul vorhanden sein. Studiengang und Studienform werden für neue Konten nicht vorausgewählt.
+
+Die Eingaben werden erst gemeinsam am Ende gespeichert. Bestehende Modul-IDs und verknüpfte Aufgaben bleiben erhalten; verwendete Module können während der Einrichtung nicht entfernt werden. Nach dem Speichern erklärt eine Meldung, dass spätere Änderungen im Profil möglich sind. Der Abschluss wird im Profil des Kontos gespeichert und gilt damit auch auf anderen Geräten.
+
 ## Funktionsprüfung
 
 - Ein neues Konto mit einer eigenen erreichbaren E-Mail-Adresse registrieren.
 - Die angezeigte Bestätigungsnachricht prüfen und den Link aus der E-Mail öffnen.
-- Anmelden, eine Aufgabe speichern, die Seite neu laden und die Aufgabe erneut öffnen.
+- Anmelden, die Einrichtung mit mindestens einem eigenen Modul abschliessen und den Hinweis zu späteren Profiländerungen prüfen.
+- Eine Aufgabe speichern, die Seite neu laden und die Aufgabe erneut öffnen. Die Einrichtung darf nicht erneut erscheinen.
 - Abmelden und mit einem zweiten bestätigten Konto anmelden. Persönliche Aufgaben gehören jeweils zum eigenen Konto.
 - Eine Gruppenarbeit mit der bestätigten Adresse des zweiten Kontos teilen und die geteilten Einträge in beiden Konten prüfen.
 
-Die Eingabeprüfung, die Behandlung typischer Auth-Fehler, die Rücksprungadresse und die Kontowechsel werden ohne echte E-Mail-Sendungen geprüft:
+Die Eingabeprüfung, typische Auth-Fehler, Rücksprungadressen, Kontowechsel und die verpflichtende Einrichtung einschliesslich Speichern, Wiederholen nach Fehlern und Erhalt bestehender Einträge werden ohne echte E-Mail-Sendungen geprüft:
 
 ```sh
 npm run check:auth
@@ -43,4 +50,5 @@ npm run check:auth
 - [GitHub Pages: Veröffentlichungsquelle](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 - [Supabase: Redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls)
 - [Supabase: eigener SMTP-Versand](https://supabase.com/docs/guides/auth/auth-smtp)
+
 

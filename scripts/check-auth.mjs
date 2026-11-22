@@ -10,11 +10,12 @@ for (const [index, code] of scripts.entries()) new vm.Script(code, { filename: '
 function fixture() {
   const requests = [], boots = [], events = new Map();
   let error = '', clientOptions, response = { data: { session: null }, error: null };
-  const errorBox = { className: '', setAttribute() {}, scrollIntoView() {}, set textContent(value) { error = value; } };
+  const errorBox = { className: '', setAttribute() {}, scrollIntoView() {}, remove() {}, set textContent(value) { error = value; } };
+  const contentView = { scrollTop: 0 };
   const app = {
     innerHTML: '', style: { setProperty() {} }, classList: { toggle() {} },
     querySelector(selector) { return selector === '.auth-error' && error ? errorBox : null; },
-    addEventListener(name, callback) { events.set(name, callback); }
+    addEventListener(name, callback) { events.set(name, callback); }, appendChild() {}
   };
   const api = {
     auth: {
@@ -29,7 +30,7 @@ function fixture() {
   const context = vm.createContext({
     console, URL, Date, Map, Set, JSON, Promise,
     location: { protocol: 'https:', href: 'https://example.test/StudyFlowBFHFinaleVersion/index.html', hash: '' },
-    document: { getElementById() { return app; }, querySelector() { return null; }, createElement() { return errorBox; }, addEventListener() {} },
+    document: { getElementById(id) { return id === 'setup-form' ? context.__setupForm : app; }, querySelector(selector) { return selector === '.content' ? contentView : null; }, createElement() { return errorBox; }, addEventListener() {} },
     window: { StudyFlowSupabase: { createClient(url, key, options) { clientOptions = options; return api; } }, addEventListener() {} },
     setInterval() {}, setTimeout(callback) { callback(); return 0; }, clearTimeout() {},
     __boots: boots
@@ -149,6 +150,9 @@ await check('first account load saves an empty module list', async () => {
   assert.equal(f.run('state.modules.length'), 0);
   assert.equal(f.run('state.items.length'), 0);
   assert.equal(f.run('state.profile.name'), 'New student');
+  assert.equal(f.run('state.profile.degree'), '', 'New users must choose their own degree program.');
+  assert.equal(f.run('state.profile.studyMode'), '', 'Study mode must not be assumed.');
+  assert.equal(f.run('state.profile.setupComplete'), false);
   assert.equal(f.context.__savedAccounts.length, 1);
   const saved = f.context.__savedAccounts[0];
   assert.equal(saved.name, 'studyflow_save');
@@ -174,6 +178,183 @@ await check('existing modules and task references survive account loading', asyn
   assert.equal(f.context.__savedAccounts.length, 0, 'Loading an existing account must not replace its saved modules.');
 });
 
-console.log('All ' + passed + ' account checks passed. No network requests or emails were sent.');
+function setupForm(f, overrides = {}) {
+  const values = f.run('({...ensureSetupDraft().profile})');
+  if (f.run('setupStep') === 2) for (const module of f.run('setupDraft.modules')) {
+    values['moduleName:' + module.id] = module.name;
+    values['moduleCode:' + module.id] = module.code;
+    values['moduleColor:' + module.id] = module.color;
+  }
+  Object.assign(values, overrides);
+  const elements = { namedItem(name) { return Object.hasOwn(values, name) ? { value: values[name] } : null; } };
+  const form = { elements, getAttribute() { return 'setup-form'; } };
+  f.context.__setupForm = form;
+  return form;
+}
+async function setupClick(f, action, extra = {}) {
+  const button = { dataset: { action, ...extra } };
+  await f.events.get('click')({ target: { closest() { return button; } } });
+}
+async function openSetup(f, settings = null, items = []) {
+  savedAccountFixture(f, settings, items);
+  await f.run('loadAccount()');
+  f.run('cloudLoaded=true; render();');
+  return f;
+}
+async function reachModules(f) {
+  setupForm(f, { degree: 'BSc Custom Studies', studyMode: 'Part-time' });
+  await f.events.get('submit')({ preventDefault() {}, target: f.context.__setupForm });
+  assert.equal(f.run('setupStep'), 2);
+}
+
+await check('new accounts must complete setup before navigation or entry changes', async () => {
+  const f = await openSetup(fixture());
+  assert.match(f.app.innerHTML, /Set up your studies/);
+  assert.doesNotMatch(f.app.innerHTML, /aria-label="Main navigation"/);
+  await setupClick(f, 'route', { route: 'tasks' });
+  await setupClick(f, 'add-module');
+  assert.equal(f.run('route'), 'home');
+  assert.equal(f.run('state.modules.length'), 0);
+  assert.equal(f.context.__savedAccounts.length, 1, 'Only the initial empty account should be saved.');
+  assert.equal(await f.run('saveForm({})'), false);
+});
+
+await check('setup requires the degree and study mode without saving partial details', async () => {
+  const f = await openSetup(fixture());
+  setupForm(f);
+  assert.equal(await f.run('submitSetup(__setupForm)'), false);
+  assert.match(f.app.innerHTML, /Enter your degree program/);
+  setupForm(f, { degree: 'My program' });
+  assert.equal(await f.run('submitSetup(__setupForm)'), false);
+  assert.match(f.app.innerHTML, /Enter your study mode/);
+  assert.equal(f.context.__savedAccounts.length, 1);
+});
+
+await check('setup requires at least one named module', async () => {
+  const f = await openSetup(fixture());
+  await reachModules(f);
+  setupForm(f);
+  assert.equal(await f.run('submitSetup(__setupForm)'), false);
+  assert.match(f.app.innerHTML, /Add at least one module/);
+  await setupClick(f, 'setup-add-module');
+  setupForm(f);
+  assert.equal(await f.run('submitSetup(__setupForm)'), false);
+  assert.match(f.app.innerHTML, /Enter a name for each module/);
+  assert.equal(f.run('state.modules.length'), 0);
+  assert.equal(f.context.__savedAccounts.length, 1);
+});
+
+await check('moving between setup steps retains unsaved profile and module edits', async () => {
+  const f = await openSetup(fixture());
+  await reachModules(f);
+  await setupClick(f, 'setup-add-module');
+  const id = f.run('setupDraft.modules[0].id');
+  setupForm(f, { ['moduleName:' + id]: 'Economics', ['moduleCode:' + id]: 'ECON', ['moduleColor:' + id]: '#245b87' });
+  await setupClick(f, 'setup-back');
+  assert.equal(f.run('setupDraft.profile.degree'), 'BSc Custom Studies');
+  assert.equal(f.run('setupDraft.modules[0].name'), 'Economics');
+  assert.equal(f.run('state.profile.degree'), '');
+  setupForm(f); await f.run('submitSetup(__setupForm)');
+  assert.match(f.app.innerHTML, /value="Economics"/);
+  assert.match(f.app.innerHTML, /value="#245b87"/);
+  assert.equal(f.context.__savedAccounts.length, 1);
+});
+
+await check('existing accounts are prompted once with saved details and linked modules intact', async () => {
+  const f = await openSetup(fixture(), {
+    profile: { name: 'Saved student', degree: 'Custom degree', studyMode: 'Full-time', semesterTerm: 'Spring semester', semesterYear: '2025' },
+    modules: [{ id: 'linked-module', name: 'Saved course', code: 'SAVED', color: '#245b87' }], theme: 'Blue', mono: false, revision: 4
+  }, [{ id: 'saved-task', owner_id: 'account-a', group_id: null, data: { kind: 'task', title: 'Keep my task', moduleId: 'linked-module' } }]);
+  assert.match(f.app.innerHTML, /value="Custom degree"/);
+  assert.equal(f.run('setupDraft.profile.semesterYear'), '2025');
+  setupForm(f); await f.run('submitSetup(__setupForm)');
+  setupForm(f); await setupClick(f, 'setup-remove-module', { id: 'linked-module' });
+  assert.equal(f.run('setupDraft.modules.length'), 1);
+  assert.match(f.app.innerHTML, /used by existing entries/);
+  setupForm(f, { 'moduleName:linked-module': 'Renamed course' });
+  assert.equal(await f.run('submitSetup(__setupForm)'), true);
+  const saved = f.context.__savedAccounts[0].payload;
+  assert.equal(saved.expected_revision, 4);
+  assert.equal(saved.settings.profile.setupComplete, true);
+  assert.equal(saved.settings.modules[0].id, 'linked-module');
+  assert.equal(saved.settings.modules[0].name, 'Renamed course');
+  assert.equal(saved.items_data[0].data.moduleId, 'linked-module');
+  assert.equal(saved.items_data[0].data.title, 'Keep my task');
+  assert.match(f.app.innerHTML, /at any time in Profile/);
+  assert.doesNotMatch(f.app.innerHTML, /aria-label="Main navigation"/);
+  await setupClick(f, 'setup-open');
+  assert.match(f.app.innerHTML, /aria-label="Main navigation"/);
+  assert.equal(f.run('setupActive()'), false);
+  // A later sign-in loads the persisted completion marker and skips setup.
+  f.context.__accountTables.studyflow_settings = { ...saved.settings, revision: 5 };
+  f.run('resetSetup();'); await f.run('loadAccount()'); f.run('render();');
+  assert.doesNotMatch(f.app.innerHTML, /id="setup-form"/);
+  assert.match(f.app.innerHTML, /aria-label="Main navigation"/);
+});
+
+await check('failed setup save keeps the draft, old data and retry available', async () => {
+  const f = await openSetup(fixture());
+  await reachModules(f); await setupClick(f, 'setup-add-module');
+  const id = f.run('setupDraft.modules[0].id');
+  setupForm(f, { ['moduleName:' + id]: 'Accounting' });
+  f.run("accountClient.rpc=async()=>({error:{message:'Failed to fetch'}});");
+  assert.equal(await f.run('submitSetup(__setupForm)'), false);
+  assert.match(f.app.innerHTML, /Connection unavailable/);
+  assert.match(f.app.innerHTML, /value="Accounting"/);
+  assert.equal(f.run('state.profile.setupComplete'), false);
+  assert.equal(f.run('state.modules.length'), 0);
+  assert.equal(f.run('isSaving'), false);
+  assert.equal(f.run('setupNotice'), false);
+  assert.doesNotMatch(f.app.innerHTML, /aria-label="Main navigation"/);
+  f.run('accountClient.rpc=async()=>({data:2,error:null});');
+  setupForm(f); assert.equal(await f.run('submitSetup(__setupForm)'), true);
+  assert.equal(f.run('state.modules[0].name'), 'Accounting');
+});
+
+await check('automatic refresh and reminders do not replace an unfinished setup', async () => {
+  const f = await openSetup(fixture());
+  f.run("setupDraft.profile.degree='Unsaved degree'; accountClient.from=()=>{throw Error('Unexpected refresh')}; state.items=[{id:'overdue',title:'Private reminder',due:new Date().toISOString(),reminder:'0'}];");
+  await f.run('refreshAccount()'); f.run('checkReminders()');
+  assert.equal(f.run('setupDraft.profile.degree'), 'Unsaved degree');
+  assert.equal(f.run('shownReminders.size'), 0);
+});
+
+await check('a pending setup save keeps navigation closed and cannot complete another session', async () => {
+  const f = await openSetup(fixture());
+  await reachModules(f); await setupClick(f, 'setup-add-module');
+  const id = f.run('setupDraft.modules[0].id');
+  setupForm(f, { ['moduleName:' + id]: 'My module' });
+  f.run('accountClient.rpc=()=>new Promise(resolve=>{globalThis.__finishSave=resolve});');
+  const pending = f.run('submitSetup(__setupForm)');
+  assert.equal(f.run('isSaving'), true);
+  assert.match(f.app.innerHTML, /Saving your setup/);
+  assert.doesNotMatch(f.app.innerHTML, /aria-label="Main navigation"/);
+  await setupClick(f, 'route', { route: 'tasks' });
+  assert.equal(f.run('route'), 'home');
+  f.run('clearAccount(); __finishSave({data:2,error:null});');
+  assert.equal(await pending, false);
+  assert.equal(f.run('setupNotice'), false);
+  assert.equal(f.run('setupDraft'), null);
+  assert.equal(f.run('currentUser'), null);
+  assert.match(f.app.innerHTML, /Welcome back/);
+});
+
+await check('signout clears the setup draft before another account is opened', async () => {
+  const f = await openSetup(fixture());
+  await reachModules(f); await setupClick(f, 'setup-add-module');
+  f.run("setupDraft.profile.degree='Private degree';");
+  await setupClick(f, 'sign-out');
+  assert.equal(f.run('setupDraft'), null);
+  assert.equal(f.run('setupStep'), 1);
+  assert.equal(f.run('setupNotice'), false);
+  assert.equal(f.run('setupError'), '');
+  assert.match(f.app.innerHTML, /Welcome back/);
+  await openSetup(f);
+  assert.equal(f.run('setupDraft.profile.degree'), '');
+  assert.equal(f.run('setupDraft.modules.length'), 0);
+});
+
+console.log('All ' + passed + ' account and setup checks passed. No network requests or emails were sent.');
+
 
 
