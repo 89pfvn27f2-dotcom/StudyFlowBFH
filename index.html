@@ -114,7 +114,977 @@ ${_}`}var x=class extends Error{constructor({message:e,code:r,cause:s,name:n}){v
 </script>
 <script>// Stable stored values and user-written content are kept separate from interface translations.
 const LANGUAGES={de:{name:'Deutsch',locale:'de-CH'},fr:{name:'Français',locale:'fr-CH'},it:{name:'Italiano',locale:'it-CH'},en:{name:'English',locale:'en-GB'}};
-const DEGREE_PROGRAMS=["BSc Agricultural Science", "BSc Business Administration", "BSc Business Information Technology", "BSc Architecture", "BSc Civil Engineering", "BSc Social Work"];
+// BFH catalogue checked 2026-11-24; includes listed master profiles, excludes the HF diploma.
+const DEGREE_PROGRAMS=[
+  {
+    "value": "BSc Agricultural Science",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Agronomie",
+      "en": "Agriculture",
+      "fr": "Agronomie",
+      "it": "Agronomia"
+    }
+  },
+  {
+    "value": "BSc Architecture",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Architektur",
+      "en": "Architecture",
+      "fr": "Architecture",
+      "it": "Architettura"
+    }
+  },
+  {
+    "value": "BA Art Education",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Vermittlung in Kunst und Design",
+      "en": "Art Education",
+      "fr": "Médiation en art et design",
+      "it": "Mediazione in arte e design"
+    }
+  },
+  {
+    "value": "BSc Automotive Engineering",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Automobil- und Fahrzeugtechnik",
+      "en": "Automotive Engineering",
+      "fr": "Ingénierie automobile et du véhicule",
+      "it": "Ingegneria automobilistica e dei veicoli"
+    }
+  },
+  {
+    "value": "BSc Civil Engineering",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Bauingenieurwesen",
+      "en": "Civil Engineering",
+      "fr": "Génie civil",
+      "it": "Ingegneria civile"
+    }
+  },
+  {
+    "value": "BSc Business Administration",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Betriebsökonomie",
+      "en": "Business Administration",
+      "fr": "Économie d’entreprise",
+      "it": "Economia aziendale"
+    }
+  },
+  {
+    "value": "BSc Data Engineering",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Data Engineering",
+      "en": "Data Engineering",
+      "fr": "Data Engineering",
+      "it": "Data Engineering"
+    }
+  },
+  {
+    "value": "BSc Digital Business & AI",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Digital Business & AI",
+      "en": "Digital Business & AI",
+      "fr": "Digital Business & AI",
+      "it": "Digital Business & AI"
+    }
+  },
+  {
+    "value": "BSc Electrical Engineering and Information Technology",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Elektrotechnik und Informationstechnologie",
+      "en": "Electrical Engineering and Information Technology",
+      "fr": "Génie électrique et technologie de l’information",
+      "it": "Elettrotecnica e tecnologia dell’informazione"
+    }
+  },
+  {
+    "value": "BSc Nutrition and Dietetics",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Ernährung und Diätetik",
+      "en": "Nutrition and Dietetics",
+      "fr": "Nutrition et diététique",
+      "it": "Nutrizione e dietetica"
+    }
+  },
+  {
+    "value": "BA Fine Arts",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Fine Arts",
+      "en": "Fine Arts",
+      "fr": "Fine Arts",
+      "it": "Fine Arts"
+    }
+  },
+  {
+    "value": "BSc Food Science & Management",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Food Science & Management",
+      "en": "Food Science & Management",
+      "fr": "Food Science & Management",
+      "it": "Food Science & Management"
+    }
+  },
+  {
+    "value": "BSc Midwifery",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Hebamme",
+      "en": "Midwifery",
+      "fr": "Sage-femme",
+      "it": "Ostetricia"
+    }
+  },
+  {
+    "value": "BSc Wood Technology",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Holztechnik",
+      "en": "Wood Technology",
+      "fr": "Technique du bois",
+      "it": "Tecnologia del legno"
+    }
+  },
+  {
+    "value": "BSc Computer Science",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Informatik",
+      "en": "Computer Science",
+      "fr": "Informatique",
+      "it": "Informatica"
+    }
+  },
+  {
+    "value": "BSc International Business Administration",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "International Business Administration",
+      "en": "International Business Administration",
+      "fr": "International Business Administration",
+      "it": "International Business Administration"
+    }
+  },
+  {
+    "value": "BA Jazz and Contemporary Music",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Jazz and Contemporary Music",
+      "en": "Jazz and Contemporary Music",
+      "fr": "Jazz and Contemporary Music",
+      "it": "Jazz and Contemporary Music"
+    }
+  },
+  {
+    "value": "BA Conservation",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Konservierung",
+      "en": "Conservation",
+      "fr": "Conservation",
+      "it": "Conservazione"
+    }
+  },
+  {
+    "value": "BA Landscape Architecture",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Landschaftsarchitektur",
+      "en": "Landscape Architecture",
+      "fr": "Architecture du paysage",
+      "it": "Architettura del paesaggio"
+    }
+  },
+  {
+    "value": "BA Literary Writing",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Literarisches Schreiben",
+      "en": "Literary Writing",
+      "fr": "Écriture littéraire",
+      "it": "Scrittura letteraria"
+    }
+  },
+  {
+    "value": "BSc Mechanical Engineering",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Maschinentechnik",
+      "en": "Mechanical Engineering",
+      "fr": "Génie mécanique",
+      "it": "Ingegneria meccanica"
+    }
+  },
+  {
+    "value": "BSc Mechatronics and Systems Engineering (Medical Engineering | Robotics | Microengineering)",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Mechatronik und Systemtechnik (Medizintechnik | Robotik | Uhren- & Mikrotechnik)",
+      "en": "Mechatronics and Systems Engineering (Medical Engineering | Robotics | Microengineering)",
+      "fr": "Mécatronique et ingénierie des systèmes (Technique médicale | Robotique | Microtechnique et technique horlogère)",
+      "it": "Meccatronica e ingegneria dei sistemi (Tecnologia medica | Robotica | Microtecnologia e orologeria)"
+    }
+  },
+  {
+    "value": "BSc Medical Informatics",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Medizininformatik",
+      "en": "Medical Informatics",
+      "fr": "Informatique médicale",
+      "it": "Informatica medica"
+    }
+  },
+  {
+    "value": "BA Classical Music",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Musik Klassik",
+      "en": "Classical Music",
+      "fr": "Musique classique",
+      "it": "Musica classica"
+    }
+  },
+  {
+    "value": "BA Music and Movement",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Musik und Bewegung",
+      "en": "Music and Movement",
+      "fr": "Musique et mouvement",
+      "it": "Musica e movimento"
+    }
+  },
+  {
+    "value": "BSc Multimedia Production",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Multimedia Production",
+      "en": "Multimedia Production",
+      "fr": "Production multimédia",
+      "it": "Produzione multimediale"
+    }
+  },
+  {
+    "value": "BSc Nursing",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Pflege",
+      "en": "Nursing",
+      "fr": "Soins infirmiers",
+      "it": "Cure infermieristiche"
+    }
+  },
+  {
+    "value": "BSc Physiotherapy",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Physiotherapie",
+      "en": "Physiotherapy",
+      "fr": "Physiothérapie",
+      "it": "Fisioterapia"
+    }
+  },
+  {
+    "value": "BSc Social Work",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Soziale Arbeit",
+      "en": "Social Work",
+      "fr": "Travail social",
+      "it": "Lavoro sociale"
+    }
+  },
+  {
+    "value": "BA Sound Arts",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Sound Arts",
+      "en": "Sound Arts",
+      "fr": "Sound Arts",
+      "it": "Sound Arts"
+    }
+  },
+  {
+    "value": "BSc Sports",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Sport",
+      "en": "Sports",
+      "fr": "Sport",
+      "it": "Sport"
+    }
+  },
+  {
+    "value": "BA Theatre/Acting",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Theater/Schauspiel",
+      "en": "Theatre/Acting",
+      "fr": "Théâtre/Interprétation",
+      "it": "Teatro/Recitazione"
+    }
+  },
+  {
+    "value": "BA Transformation Design",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Transformation Design",
+      "en": "Transformation Design",
+      "fr": "Transformation Design",
+      "it": "Transformation Design"
+    }
+  },
+  {
+    "value": "BSc Environmental and Resource Management",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Umwelt- und Ressourcenmanagement",
+      "en": "Environmental and Resource Management",
+      "fr": "Gestion de l’environnement et des ressources",
+      "it": "Gestione dell’ambiente e delle risorse"
+    }
+  },
+  {
+    "value": "BA Visual Communication",
+    "level": "Bachelor",
+    "award": "BA",
+    "labels": {
+      "de": "Visuelle Kommunikation",
+      "en": "Visual Communication",
+      "fr": "Communication visuelle",
+      "it": "Comunicazione visiva"
+    }
+  },
+  {
+    "value": "BSc Forest Science",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Waldwissenschaften",
+      "en": "Forest Science",
+      "fr": "Sciences forestières",
+      "it": "Scienze forestali"
+    }
+  },
+  {
+    "value": "BSc Industrial Engineering and Management Science",
+    "level": "Bachelor",
+    "award": "BSc",
+    "labels": {
+      "de": "Wirtschaftsingenieurwesen",
+      "en": "Industrial Engineering and Management Science",
+      "fr": "Ingénierie de gestion",
+      "it": "Ingegneria gestionale"
+    }
+  },
+  {
+    "value": "MA Acting for Screen & Digital Media",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Acting for Screen & Digital Media",
+      "en": "Acting for Screen & Digital Media",
+      "fr": "Acting for Screen & Digital Media",
+      "it": "Acting for Screen & Digital Media"
+    }
+  },
+  {
+    "value": "MA Architecture",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Architektur",
+      "en": "Architecture",
+      "fr": "Architecture",
+      "it": "Architettura"
+    }
+  },
+  {
+    "value": "MA Art Education",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Art Education",
+      "en": "Art Education",
+      "fr": "Art Education",
+      "it": "Art Education"
+    }
+  },
+  {
+    "value": "MSc Biomedical Engineering",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Biomedical Engineering",
+      "en": "Biomedical Engineering",
+      "fr": "Ingénierie biomédicale",
+      "it": "Ingegneria biomedica"
+    }
+  },
+  {
+    "value": "MSc Business Administration",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Business Administration",
+      "en": "Business Administration",
+      "fr": "Business Administration",
+      "it": "Business Administration"
+    }
+  },
+  {
+    "value": "MSc Circular Innovation and Sustainability",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Circular Innovation and Sustainability",
+      "en": "Circular Innovation and Sustainability",
+      "fr": "Circular Innovation and Sustainability",
+      "it": "Circular Innovation and Sustainability"
+    }
+  },
+  {
+    "value": "MA Conservation-Restoration",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Conservation-Restoration",
+      "en": "Conservation-Restoration",
+      "fr": "Conservation-restauration",
+      "it": "Conservazione e restauro"
+    }
+  },
+  {
+    "value": "MA Contemporary Arts Practice",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Contemporary Arts Practice",
+      "en": "Contemporary Arts Practice",
+      "fr": "Contemporary Arts Practice",
+      "it": "Contemporary Arts Practice"
+    }
+  },
+  {
+    "value": "MA Design",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Design",
+      "en": "Design",
+      "fr": "Design",
+      "it": "Design"
+    }
+  },
+  {
+    "value": "MSc Digital Business Administration",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Digital Business Administration",
+      "en": "Digital Business Administration",
+      "fr": "Digital Business Administration",
+      "it": "Digital Business Administration"
+    }
+  },
+  {
+    "value": "MSc Digital Government",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Digital Government",
+      "en": "Digital Government",
+      "fr": "Digital Government",
+      "it": "Digital Government"
+    }
+  },
+  {
+    "value": "MSc Entrepreneurship & Business Innovation",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Entrepreneurship & Business Innovation",
+      "en": "Entrepreneurship & Business Innovation",
+      "fr": "Entrepreneurship & Business Innovation",
+      "it": "Entrepreneurship & Business Innovation"
+    }
+  },
+  {
+    "value": "MSc Nutrition and Dietetics",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Ernährung und Diätetik",
+      "en": "Nutrition and Dietetics",
+      "fr": "Nutrition et diététique",
+      "it": "Nutrizione e dietetica"
+    }
+  },
+  {
+    "value": "MSc Healthcare Leadership",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Healthcare Leadership",
+      "en": "Healthcare Leadership",
+      "fr": "Healthcare Leadership",
+      "it": "Healthcare Leadership"
+    }
+  },
+  {
+    "value": "MSc Midwifery",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Hebamme",
+      "en": "Midwifery",
+      "fr": "Sage-femme",
+      "it": "Ostetricia"
+    }
+  },
+  {
+    "value": "MSc Engineering – Business Engineering",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Business Engineering",
+      "en": "Engineering – Business Engineering",
+      "fr": "Engineering – Business Engineering",
+      "it": "Engineering – Business Engineering"
+    }
+  },
+  {
+    "value": "MSc Engineering – Civil Engineering",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Civil Engineering",
+      "en": "Engineering – Civil Engineering",
+      "fr": "Engineering – Génie civil",
+      "it": "Engineering – Ingegneria civile"
+    }
+  },
+  {
+    "value": "MSc Engineering – Computer Science",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Computer Science",
+      "en": "Engineering – Computer Science",
+      "fr": "Engineering – Informatique",
+      "it": "Engineering – Informatica"
+    }
+  },
+  {
+    "value": "MSc Engineering – Data Science",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Data Science",
+      "en": "Engineering – Data Science",
+      "fr": "Engineering – Data Science",
+      "it": "Engineering – Data Science"
+    }
+  },
+  {
+    "value": "MSc Engineering – Electrical Engineering",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Electrical Engineering",
+      "en": "Engineering – Electrical Engineering",
+      "fr": "Engineering – Génie électrique",
+      "it": "Engineering – Ingegneria elettrica"
+    }
+  },
+  {
+    "value": "MSc Engineering – Energy and Environment",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Energy and Environment",
+      "en": "Engineering – Energy and Environment",
+      "fr": "Engineering – Énergie et environnement",
+      "it": "Engineering – Energia e ambiente"
+    }
+  },
+  {
+    "value": "MSc Engineering – Information and Cyber Security",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Information and Cyber Security",
+      "en": "Engineering – Information and Cyber Security",
+      "fr": "Engineering – Sécurité de l’information et cybersécurité",
+      "it": "Engineering – Sicurezza dell’informazione e cibersicurezza"
+    }
+  },
+  {
+    "value": "MSc Engineering – Mechanical Engineering",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Mechanical Engineering",
+      "en": "Engineering – Mechanical Engineering",
+      "fr": "Engineering – Génie mécanique",
+      "it": "Engineering – Ingegneria meccanica"
+    }
+  },
+  {
+    "value": "MSc Engineering – Mechatronics and Automation",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Mechatronics and Automation",
+      "en": "Engineering – Mechatronics and Automation",
+      "fr": "Engineering – Mécatronique et automatisation",
+      "it": "Engineering – Meccatronica e automazione"
+    }
+  },
+  {
+    "value": "MSc Engineering – Medical Engineering",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Medical Engineering",
+      "en": "Engineering – Medical Engineering",
+      "fr": "Engineering – Technique médicale",
+      "it": "Engineering – Tecnologia medica"
+    }
+  },
+  {
+    "value": "MSc Engineering – Photonics and Laser Engineering",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Engineering – Photonics and Laser Engineering",
+      "en": "Engineering – Photonics and Laser Engineering",
+      "fr": "Engineering – Photonique et ingénierie laser",
+      "it": "Engineering – Fotonica e ingegneria laser"
+    }
+  },
+  {
+    "value": "MSc Life Sciences – Agricultural Science",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Life Sciences – Agrarwissenschaften",
+      "en": "Life Sciences – Agricultural Science",
+      "fr": "Life Sciences – Sciences agronomiques",
+      "it": "Life Sciences – Scienze agrarie"
+    }
+  },
+  {
+    "value": "MSc Life Sciences – Food, Nutrition and Health",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Life Sciences – Food, Nutrition and Health",
+      "en": "Life Sciences – Food, Nutrition and Health",
+      "fr": "Life Sciences – Food, Nutrition and Health",
+      "it": "Life Sciences – Food, Nutrition and Health"
+    }
+  },
+  {
+    "value": "MSc Life Sciences – Forest Science",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Life Sciences – Waldwissenschaften",
+      "en": "Life Sciences – Forest Science",
+      "fr": "Life Sciences – Sciences forestières",
+      "it": "Life Sciences – Scienze forestali"
+    }
+  },
+  {
+    "value": "MSc Life Sciences – Regional Management in Mountain Areas (Alpine Master’s)",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Life Sciences – Regionalmanagement in Berggebieten (Alpenmaster)",
+      "en": "Life Sciences – Regional Management in Mountain Areas (Alpine Master’s)",
+      "fr": "Life Sciences – Gestion régionale des régions de montagne (Master alpin)",
+      "it": "Life Sciences – Gestione regionale delle aree montane (Master alpino)"
+    }
+  },
+  {
+    "value": "MA Multimedia Communication & Publishing",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Multimedia Communication & Publishing",
+      "en": "Multimedia Communication & Publishing",
+      "fr": "Communication et édition multimédia",
+      "it": "Comunicazione ed editoria multimediale"
+    }
+  },
+  {
+    "value": "MA Music Composition – Contemporary Jazz",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Music Composition – Contemporary Jazz",
+      "en": "Music Composition – Contemporary Jazz",
+      "fr": "Composition musicale – Jazz contemporain",
+      "it": "Composizione musicale – Jazz contemporaneo"
+    }
+  },
+  {
+    "value": "MA Music Composition – Creative Practice",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Music Composition – Creative Practice",
+      "en": "Music Composition – Creative Practice",
+      "fr": "Composition musicale – Pratique créative",
+      "it": "Composizione musicale – Pratica creativa"
+    }
+  },
+  {
+    "value": "MA Music Pedagogy – Jazz and Contemporary Music",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Music Pedagogy – Jazz and Contemporary Music",
+      "en": "Music Pedagogy – Jazz and Contemporary Music",
+      "fr": "Pédagogie musicale – Jazz et musique contemporaine",
+      "it": "Pedagogia musicale – Jazz e musica contemporanea"
+    }
+  },
+  {
+    "value": "MA Music Pedagogy – Classical Music",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Music Pedagogy – Klassik",
+      "en": "Music Pedagogy – Classical Music",
+      "fr": "Pédagogie musicale – Musique classique",
+      "it": "Pedagogia musicale – Musica classica"
+    }
+  },
+  {
+    "value": "MA Music Pedagogy – Music S II",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Music Pedagogy – Musik S II",
+      "en": "Music Pedagogy – Music S II",
+      "fr": "Pédagogie musicale – Musique S II",
+      "it": "Pedagogia musicale – Musica S II"
+    }
+  },
+  {
+    "value": "MA Music Pedagogy – Eurythmics and Performance",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Music Pedagogy – Rhythmik und Performance",
+      "en": "Music Pedagogy – Eurythmics and Performance",
+      "fr": "Pédagogie musicale – Rythmique et performance",
+      "it": "Pedagogia musicale – Ritmica e performance"
+    }
+  },
+  {
+    "value": "MA Music Pedagogy – Eurythmics and Dance in Context",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Music Pedagogy – Rhythmik und Tanzvermittlung",
+      "en": "Music Pedagogy – Eurythmics and Dance in Context",
+      "fr": "Pédagogie musicale – Rythmique et médiation en danse",
+      "it": "Pedagogia musicale – Ritmica e didattica della danza"
+    }
+  },
+  {
+    "value": "MA Music Performance – Jazz and Contemporary Music",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Music Performance – Jazz and Contemporary Music",
+      "en": "Music Performance – Jazz and Contemporary Music",
+      "fr": "Interprétation musicale – Jazz et musique contemporaine",
+      "it": "Interpretazione musicale – Jazz e musica contemporanea"
+    }
+  },
+  {
+    "value": "MA Music Performance – Classical",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Music Performance – Klassik",
+      "en": "Music Performance – Classical",
+      "fr": "Interprétation musicale – Musique classique",
+      "it": "Interpretazione musicale – Musica classica"
+    }
+  },
+  {
+    "value": "MSc Nursing",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Pflege",
+      "en": "Nursing",
+      "fr": "Soins infirmiers",
+      "it": "Cure infermieristiche"
+    }
+  },
+  {
+    "value": "MSc Physiotherapy",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Physiotherapie",
+      "en": "Physiotherapy",
+      "fr": "Physiothérapie",
+      "it": "Fisioterapia"
+    }
+  },
+  {
+    "value": "MSc Precision Engineering",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Precision Engineering",
+      "en": "Precision Engineering",
+      "fr": "Ingénierie de précision",
+      "it": "Ingegneria di precisione"
+    }
+  },
+  {
+    "value": "MSc Resilient Cities and Communities",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Resilient Cities and Communities",
+      "en": "Resilient Cities and Communities",
+      "fr": "Resilient Cities and Communities",
+      "it": "Resilient Cities and Communities"
+    }
+  },
+  {
+    "value": "MSc Social Work",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Soziale Arbeit",
+      "en": "Social Work",
+      "fr": "Travail social",
+      "it": "Lavoro sociale"
+    }
+  },
+  {
+    "value": "MA Specialized Music Performance – Classical",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Specialized Music Performance – Klassik",
+      "en": "Specialized Music Performance – Classical",
+      "fr": "Interprétation musicale spécialisée – Musique classique",
+      "it": "Interpretazione musicale specializzata – Musica classica"
+    }
+  },
+  {
+    "value": "MA Specialized Music Performance – Opera",
+    "level": "Master",
+    "award": "MA",
+    "labels": {
+      "de": "Specialized Music Performance – Oper",
+      "en": "Specialized Music Performance – Opera",
+      "fr": "Interprétation musicale spécialisée – Opéra",
+      "it": "Interpretazione musicale specializzata – Opera"
+    }
+  },
+  {
+    "value": "MSc Sports with specialisation in Elite Sports",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Sports mit Ausrichtung Spitzensport EHSM",
+      "en": "Sports with specialisation in Elite Sports",
+      "fr": "Sport avec orientation sport d’élite HEFSM",
+      "it": "Sport con orientamento sport di punta SUFSM"
+    }
+  },
+  {
+    "value": "MSc Sports Science",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Sportwissenschaften",
+      "en": "Sports Science",
+      "fr": "Sciences du sport",
+      "it": "Scienze dello sport"
+    }
+  },
+  {
+    "value": "MSc Business Information Technology",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Wirtschaftsinformatik",
+      "en": "Business Information Technology",
+      "fr": "Informatique de gestion",
+      "it": "Informatica di gestione"
+    }
+  },
+  {
+    "value": "MSc Wood Technology",
+    "level": "Master",
+    "award": "MSc",
+    "labels": {
+      "de": "Wood Technology",
+      "en": "Wood Technology",
+      "fr": "Technologie du bois",
+      "it": "Tecnologia del legno"
+    }
+  }
+];
 const LANGUAGE_KEY='studyflow-interface-language';
 const TRANSLATIONS={
   "Language": {
@@ -1776,6 +2746,16 @@ const TRANSLATIONS={
     "de": "Studiengang auswählen",
     "fr": "Choisir ton cursus",
     "it": "Scegli il tuo corso di studi"
+  },
+  "Bachelor programmes": {
+    "de": "Bachelorstudiengänge",
+    "fr": "Filières de bachelor",
+    "it": "Corsi di bachelor"
+  },
+  "Master programmes": {
+    "de": "Masterstudiengänge",
+    "fr": "Filières de master",
+    "it": "Corsi di master"
   }
 };
 function supportedLanguage(value){return Object.hasOwn(LANGUAGES,value)}
@@ -2082,11 +3062,19 @@ function appearance(){return `<button class="text-button" data-action="profile-t
 function render(){syncDocumentLanguage();if(!currentUser||!cloudLoaded||isRecovery){renderAuth();return}if(setupActive()){renderSetup();return}const scroll=document.querySelector('.content')?.scrollTop||0;setLayout('app');applyTheme();app.innerHTML=`${brandHeader()}<main class="content view-${esc(route)}" id="main" tabindex="-1">${route==='home'?home():route==='tasks'?overview('task'):route==='exams'?overview('exam'):route==='groups'?overview('group'):profile()}</main>${nav()}`;document.querySelector('.content').scrollTop=scroll;if(overlay)renderOverlay();checkReminders()}
 const reminderOptions=[['none','No reminder'],['0','At the due time'],['15','15 minutes before'],['30','30 minutes before'],['60','1 hour before'],['1440','1 day before'],['2880','2 days before']];
 function selectOptions(arr,current,translate=true){return arr.map(([value,label])=>`<option value="${esc(value)}" ${String(current)===value?'selected':''}>${esc(translate?t(label):label)}</option>`).join('')}
-function degreeLabel(value){return DEGREE_PROGRAMS.includes(value)?t(value):value}
+function degreeLabel(value){
+  const programme=DEGREE_PROGRAMS.find(p=>p.value===value);
+  if(programme)return programme.award+' '+(programme.labels[language]||programme.labels.en);
+  return value==='BSc Business Information Technology'?t(value):value;
+}
 function degreeField(current=''){
-  const saved=current&&!DEGREE_PROGRAMS.includes(current)?`<option value="${esc(current)}" selected>${esc(current)}</option>`:'';
-  const options=DEGREE_PROGRAMS.map(value=>`<option value="${esc(value)}" ${value===current?'selected':''}>${tx(value)}</option>`).join('');
-  return field('Degree program',`<select id="degree-program" name="degree" required aria-label="${tx('Degree program')}"><option value="" ${!current?'selected':''}>${tx('Choose your degree program')}</option>${saved}${options}</select>`);
+  const saved=current&&!DEGREE_PROGRAMS.some(p=>p.value===current)?`<option value="${esc(current)}" selected>${esc(degreeLabel(current))}</option>`:'';
+  const collator=new Intl.Collator(locale(),{sensitivity:'base',numeric:true});
+  const groups=['Bachelor','Master'].map(level=>{
+    const programmes=DEGREE_PROGRAMS.filter(p=>p.level===level).sort((a,b)=>collator.compare(a.labels[language]||a.labels.en,b.labels[language]||b.labels.en));
+    return `<optgroup label="${tx(level==='Bachelor'?'Bachelor programmes':'Master programmes')}">${programmes.map(p=>`<option value="${esc(p.value)}" ${p.value===current?'selected':''}>${esc(degreeLabel(p.value))}</option>`).join('')}</optgroup>`;
+  }).join('');
+  return field('Degree program',`<select id="degree-program" name="degree" required aria-label="${tx('Degree program')}"><option value="" ${!current?'selected':''}>${tx('Choose your degree program')}</option>${saved}${groups}</select>`);
 }
 function profileOptions(values,current,translate=false){return selectOptions([...new Set([current,...values].filter(Boolean))].map(x=>[x,x]),current,translate)}
 function field(label,body,help=''){return `<div class="field"><label>${tx(label)}${body}</label>${help?`<p class="help">${tx(help)}</p>`:''}</div>`}

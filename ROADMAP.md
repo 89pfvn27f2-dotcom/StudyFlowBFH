@@ -20,3 +20,5 @@ Die Änderungen werden einzeln in dieser Reihenfolge umgesetzt.
 
 - [x] Die frühere Studiengang-Auswahl als Dropdown in Einrichtung und Profil wiederhergestellt, ohne neue Freitexteingabe. Gespeicherte Angaben bleiben erhalten.
 - [x] Die maximale Breite von 1440 Pixeln und die äusseren Ränder auf dem PC entfernt. Der App-Rahmen nutzt die volle Fensterfläche; die Profilansicht die verfügbare Arbeitsbreite.
+
+- [x] Die Studiengang-Auswahl auf alle regulären BFH-Bachelor- und Masterangebote samt aufgeführten Master-Profilen erweitert, einschliesslich International Business Administration. Beide Abschlussstufen sind getrennt und sprachabhängig sortiert; vorhandene Angaben bleiben erhalten. Katalog geprüft am 24. November 2026.

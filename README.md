@@ -36,7 +36,11 @@ Der manuelle Button **Refresh account** wurde aus dem Profil entfernt. Die App l
 
 ## Studiengang auswählen
 
-Einrichtung und Profil verwenden wieder dieselbe frühere Dropdown-Auswahl: Agronomie, Betriebsökonomie, Wirtschaftsinformatik, Architektur, Bauingenieurwesen und Soziale Arbeit. Es gibt kein Freitextfeld für neue Studiengänge. Die Beschriftungen folgen der App-Sprache; die gespeicherten Werte bleiben gleich. Ein bereits gespeicherter abweichender Studiengang bleibt beim Bearbeiten erhalten und wird nicht automatisch durch einen Listeneintrag ersetzt. Bei neuen Konten bleibt die Auswahl zunächst leer.
+Einrichtung und Profil verwenden dieselbe nach Bachelor und Master gegliederte Auswahl. Sie umfasst die 88 regulären Bachelor- und Masterangebote einschliesslich der einzeln aufgeführten Master-Profile aus der vollständigen [BFH-Studiengangsliste](https://www.bfh.ch/de/studium/alle-studiengaenge/), geprüft am 24. November 2026. Das ebenfalls dort aufgeführte HF-Diplom wird nicht als akademischer Bachelor- oder Masterstudiengang angeboten. International Business Administration ist enthalten.
+
+Innerhalb der beiden Gruppen werden die Angebote in der gewählten App-Sprache alphabetisch sortiert. Abschlusskürzel unterscheiden gleichnamige Bachelor- und Masterangebote. Die Bezeichnungen sind in Deutsch, Französisch, Italienisch und Englisch hinterlegt; internationale Studiengangsnamen bleiben teilweise unverändert. Die Quelle führt insbesondere Engineering-, Life-Sciences- und Musik-Masterprofile einzeln auf, deshalb ist die Zahl der Auswahloptionen grösser als eine Zählung übergeordneter Abschlüsse.
+
+Gespeicherte Studiengangswerte bleiben erhalten. Bestehende IDs werden nicht durch eine neue Auswahl ersetzt, und ein früher gespeicherter abweichender Eintrag bleibt auswählbar. Das gilt auch für den bisherigen Bachelor Wirtschaftsinformatik, während neue Konten das aktuelle Angebot Digital Business & AI auswählen können. Die Architektur-Beschriftung verwendet den in der Quelle genannten BA; der frühere interne Wert bleibt für vorhandene Daten kompatibel. Neue Konten beginnen ohne vorausgewählten Studiengang. Es gibt kein zusätzliches Freitextfeld.
 
 ## Logo und App-Name
 

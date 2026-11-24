@@ -919,7 +919,57 @@ await check('preserved tasks load as personal entries with their module and comp
   assert.equal(f.run("state.items[0].reminder"),'60');assert.equal(f.run("state.items[0].description"),'Saved description');
 });
 
-console.log('All ' + passed + ' account, setup, language, group and deletion checks passed. No network requests or emails were sent.');
+await check('International Business Administration can be selected during setup and survives a later login',async()=>{
+  const f=await openSetup(fixture());
+  assert.match(f.app.innerHTML,/<optgroup label="Bachelor programmes">/);
+  assert.match(f.app.innerHTML,/<optgroup label="Master programmes">/);
+  assert.match(f.app.innerHTML,/<option value="BSc International Business Administration"/);
+  setupForm(f,{degree:'BSc International Business Administration',studyMode:'Full-time'});
+  assert.equal(await f.run('submitSetup(__setupForm)'),true);
+  await setupClick(f,'setup-add-module');
+  const moduleId=f.run('setupDraft.modules[0].id');
+  setupForm(f,{['moduleName:'+moduleId]:'Own IBA module'});
+  assert.equal(await f.run('submitSetup(__setupForm)'),true);
+  const saved=f.context.__savedAccounts.at(-1).payload;
+  assert.equal(saved.settings.profile.degree,'BSc International Business Administration');
+  assert.equal(saved.settings.profile.setupComplete,true);
+  f.context.__accountTables.studyflow_settings={...saved.settings,revision:2};
+  f.run('resetSetup();');await f.run('loadAccount()');f.run('render();');
+  assert.equal(f.run('state.profile.degree'),'BSc International Business Administration');
+  assert.equal(f.run('state.modules[0].name'),'Own IBA module');
+  assert.doesNotMatch(f.app.innerHTML,/id="setup-form"/);
+});
+await check('a master selection saves without losing existing work or silently replacing a legacy degree',async()=>{
+  const f=await groupFixture([], [{id:'kept-work',owner_id:'account-a',group_id:null,data:{kind:'task',title:'Keep this task',moduleId:'module-one',due:'2026-12-03T18:00',reminder:'none',done:false}}]);
+  f.run("state.profile.degree='BSc Business Information Technology';");
+  assert.match(f.run('degreeField(state.profile.degree)'),/<option value="BSc Business Information Technology" selected>/);
+  assert.equal(f.run('state.profile.degree'),'BSc Business Information Technology');
+  for(const [code,bachelor,master] of [['de','Bachelorstudiengänge','Masterstudiengänge'],['fr','Filières de bachelor','Filières de master'],['it','Corsi di bachelor','Corsi di master'],['en','Bachelor programmes','Master programmes']]){
+    f.run('language='+JSON.stringify(code));
+    const options=f.run("degreeField('MSc Business Administration')");
+    assert.ok(options.includes('<optgroup label="'+bachelor+'">'));
+    assert.ok(options.includes('<optgroup label="'+master+'">'));
+    assert.match(options,/<option value="MSc Business Administration" selected>/);
+    assert.doesNotMatch(options,/<input/);
+  }
+  f.run("language='en';");
+  const values={name:'Student',degree:'MSc Business Administration',studyMode:'Full-time',semesterTerm:'Fall semester',semesterYear:'2026'};
+  const elements=Object.entries(values).map(([name,value])=>({name,value,type:'text',setAttribute(){},removeAttribute(){},focus(){},scrollIntoView(){}}));
+  elements.namedItem=name=>elements.find(el=>el.name===name);
+  const error={hidden:true,scrollIntoView(){}};
+  f.context.__degreeProfileForm={elements,getAttribute(){return 'profile-form'},querySelector(){return error},querySelectorAll(){return []}};
+  assert.equal(await f.run('saveForm(__degreeProfileForm)'),true);
+  const saved=f.context.__savedAccounts.at(-1).payload;
+  assert.equal(saved.settings.profile.degree,'MSc Business Administration');
+  assert.equal(saved.settings.modules[0].id,'module-one');
+  assert.equal(saved.items_data[0].id,'kept-work');assert.equal(saved.items_data[0].data.title,'Keep this task');
+  f.context.__accountTables.studyflow_settings={...saved.settings,revision:8};
+  await f.run('loadAccount()');
+  assert.equal(f.run('state.profile.degree'),'MSc Business Administration');
+  assert.equal(f.run("degreeLabel(state.profile.degree)"),'MSc Business Administration');
+});
+
+console.log('All ' + passed + ' account, setup, degree, language, group and deletion checks passed. No network requests or emails were sent.');
 
 
 
